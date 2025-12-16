@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@500&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@theme {
+    --font-logo: Montserrat, sans-serif;
+    --font-navbar: Poppins;
+    --text-logo: 34px;
+    --text-navbar: 16px;
+}
