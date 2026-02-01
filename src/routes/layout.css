@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import 'tailwindcss';
+@import "tw-animate-css";
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
@@ -192,6 +193,6 @@
 
     --color-stroke-action-normal: var(--color-primary-600);
     --color-stroke-action-hover: var(--color-primary-700);
-    --color-stroke-action-disabled: var(--color-neutral-500);
+    --color-stroke-action-disabled: var(--color-neutral-300);
     --color-stroke-focus: var(--color-primary-500);
 }

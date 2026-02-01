@@ -53,6 +53,9 @@
                 <AnchorButton href="/shop" dataActive={isActive("/shop")}
                     >Shop</AnchorButton
                 >
+                <AnchorButton href="/blog" dataActive={isActive("/blog")}
+                    >Blog</AnchorButton
+                >
                 <AnchorButton href="/about" dataActive={isActive("/about")}
                     >About</AnchorButton
                 >
@@ -87,7 +90,7 @@
         <footer class="flex flex-col items-center gap-10 py-10 w-full">
             <Separator.Root
                 decorative
-                class="border-b-2 w-full border-black"
+                class="border-b-2 w-full border-stroke-action-disabled"
             />
             <div class="flex flex-col max-w-max gap-5 items-center">
                 <div class="flex gap-10">
@@ -168,7 +171,7 @@
                 </div>
                 <Separator.Root
                     decorative
-                    class="border-b-2 w-full border-black"
+                    class="border-b-2 w-full border-stroke-action-disabled"
                 />
                 <p class="font-primary text-body-sm font-semibold text-content-heading">
                     2026 furniro. All rights reserved

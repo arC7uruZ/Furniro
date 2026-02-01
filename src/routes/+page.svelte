@@ -8,6 +8,9 @@
     } from "@lucide/svelte";
     import { Button } from "bits-ui";
     import type { CarouselAPI } from "$lib/components/ui/carousel/context.js";
+    import type { PageProps } from "./$types";
+
+    let { data }: PageProps = $props();
 
     let api = $state<CarouselAPI>();
 
@@ -32,102 +35,27 @@
         }).format(price);
     };
 
-    const carouselProducs = [
-        {
-            category: "Bed room",
-            type: "Inner Piece",
-            src: "/rooms/1.png",
-            alt: "room 1",
-        },
-        {
-            category: "Dinner",
-            type: "Inner Piece",
-            src: "/rooms/2.png",
-            alt: "room 2",
-        },
-        {
-            category: "Living",
-            type: "Inner Piece",
-            src: "/rooms/3.png",
-            alt: "room 3",
-        },
-        {
-            category: "Living",
-            type: "Outer Piece",
-            src: "/rooms/4.png",
-            alt: "room 4",
-        },
-    ];
+    // svelte-ignore state_referenced_locally
+    const products = $state([...data.products]);
+    let loading = $state(false);
+    let hasMore = $state(true);
 
-    const products = [
-        {
-            title: "Slytherine",
-            description: "stylish cafe chair",
-            price: 3_500.0,
-            discount: 30,
-            imgSrc: "/products/1.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2024-01-15"),
-        },
-        {
-            title: "Leviosa",
-            description: "stylish cafe chair",
-            price: 2_500.0,
-            imgSrc: "/products/2.png",
-            imgAlt: "a leviosa product",
-            addedToCatalogDate: new Date("2024-03-22"),
-        },
-        {
-            title: "Lolita",
-            description: "Luxury big sofa",
-            price: 14_000.0,
-            discount: 50,
-            imgSrc: "/products/3.png",
-            imgAlt: "a lolita product",
-            addedToCatalogDate: new Date("2024-02-10"),
-        },
-        {
-            title: "Respira",
-            description: "Oltdoor bar table and stool",
-            price: 500.0,
-            imgSrc: "/products/5.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2025-12-15"),
-        },
-        {
-            title: "Grifo",
-            description: "Night lamp",
-            price: 1_500.0,
-            imgSrc: "/products/9.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2024-01-30"),
-        },
-        {
-            title: "Muggo",
-            description: "Small mug",
-            price: 150.0,
-            imgSrc: "/products/10.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2024-05-12"),
-        },
-        {
-            title: "Pingky",
-            description: "Cute bed set",
-            price: 14_000.0,
-            discount: 50,
-            imgSrc: "/products/11.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2026-01-01"),
-        },
-        {
-            title: "Potty",
-            description: "Minimalist flower pot",
-            price: 500.0,
-            imgSrc: "/products/12.png",
-            imgAlt: "a slytherin product",
-            addedToCatalogDate: new Date("2024-06-01"),
-        },
-    ];
+    async function showMore() {
+        if (loading) return;
+
+        loading = true;
+
+        const res = await fetch(`/products?page=${Math.floor(products.length / 8) + 1}`);
+        const newProducts = await res.json();
+
+        if (newProducts.length === 0) {
+            hasMore = false;
+        } else {
+            products.push(...newProducts);
+        }
+
+        loading = false;
+    }
 </script>
 
 <section
@@ -179,13 +107,17 @@
             </p>
         </div>
         <div class="flex gap-5">
-            {#snippet CategoryCard(url: string, path: string, caption: string)}
+            {#snippet CategoryCard(
+                src: string,
+                categoryId: number,
+                caption: string,
+            )}
                 <a
-                    href={`/${path}`}
+                    href={`/products?category=${categoryId}`}
                     class="flex flex-col items-center focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-stroke-focus hover:scale-105 transform transition-transform duration-300 ease-out rounded-xl"
                 >
                     <img
-                        src="/furniture/{url}"
+                        {src}
                         alt=""
                         class="w-95.25 h-120.25 object-cover object-left rounded-xl"
                     />
@@ -196,9 +128,13 @@
                     </span>
                 </a>
             {/snippet}
-            {@render CategoryCard("image%20106.png", "dinner", "Dining")}
-            {@render CategoryCard("image%20100.png", "living", "Living")}
-            {@render CategoryCard("image%20101.png", "bedroom", "Bedroom")}
+            {#each data.categoryProducts as categoryProduct}
+                {@render CategoryCard(
+                    categoryProduct.productImg,
+                    categoryProduct.categoryId,
+                    categoryProduct.categoryName,
+                )}
+            {/each}
         </div>
     </nav>
 </section>
@@ -231,14 +167,20 @@
             src: string,
             alt: string,
             addedToCatalogDate: Date,
-            discount?: number,
+            discount: number | null,
         )}
             <li>
                 <a
                     href="/"
                     class="flex flex-col group w-71.25 h-111.5 relative"
                 >
-                    <img {src} {alt} width="285" height="301" />
+                    <img
+                        {src}
+                        {alt}
+                        width="285"
+                        height="301"
+                        class="object-cover w-71.25 h-75.25 object-center"
+                    />
                     <div
                         class="flex-1 flex flex-col justify-evenly p-4 bg-surface-subtle"
                     >
@@ -271,7 +213,7 @@
                     </div>
                     {#if discount}
                         {@render tag("discount", `-${discount}%`)}
-                    {:else if new Date().getTime() - addedToCatalogDate.getTime() < 1000 * 60 * 60 * 24 * 30}
+                    {:else if new Date().getTime() - addedToCatalogDate.getTime() < 1000 * 60 * 60 * 24 * 150}
                         {@render tag("new", "New")}
                     {/if}
                     <div
@@ -310,17 +252,19 @@
                 product.title,
                 product.description,
                 product.price,
-                product.imgSrc,
-                product.imgAlt,
-                product.addedToCatalogDate,
+                product.img_src,
+                product.img_alt,
+                new Date(product.created_at),
                 product.discount,
             )}
         {/each}
     </ul>
     <Button.Root
-        class="flex justify-center items-center cursor-pointer px-3xl py-sm border font-primary font-semibold text-body-lg hover:bg-surface-action-neutral-hover text-content-on-action-secondary-normal hover:text-content-on-action-secondary-hover border-stroke-action-normal hover:border-stroke-action-hover"
+        class="flex justify-center items-center cursor-pointer px-3xl py-sm border font-primary font-semibold text-body-lg hover:bg-surface-action-neutral-hover disabled:bg-surface-action-disabled text-content-on-action-secondary-normal hover:text-content-on-action-secondary-hover disabled:text-content-on-action-disabled border-stroke-action-normal hover:border-stroke-action-hover disabled:border-stroke-action-disabled"
+        onclick={showMore}
+        disabled={loading}
     >
-        Show More
+        {loading ? "Loading..." : "Show More"}
     </Button.Root>
 </section>
 
@@ -335,12 +279,11 @@
             Our designer already made a lot of beautiful prototipe of rooms that
             inspire you
         </p>
-        <a
-            href="/"
-            class="px-12 pt-4 pb-4 bg-primary text-white font-primary font-semibold text-base"
+        <Button.Root
+            class="bg-surface-action-primary-normal hover:bg-surface-action-primary-hover disabled:bg-surface-action-disabled text-content-on-action-primary-normal hover:text-content-on-action-primary-hover disabled:text-content-on-action-disabled py-4 px-12 font-primary font-semibold text-heading-h6 cursor-pointer"
         >
             Explore More
-        </a>
+        </Button.Root>
     </div>
     <Carousel.Root
         setApi={(emblaApi) => (api = emblaApi)}
@@ -348,13 +291,13 @@
         class="w-200"
     >
         <Carousel.Content class="flex items-start min-h-145.5 w-full">
-            {#each carouselProducs as product, i (i)}
+            {#each data.carouselProducts as product, i (i)}
                 <Carousel.Item
                     class="relative flex items-center justify-center basis-6/14 mx-2"
                 >
                     <img
-                        src={product.src}
-                        alt={product.alt}
+                        src={product.productImg}
+                        alt={product.productImgAlt}
                         class="object-cover object-top {current == i
                             ? 'h-145.5'
                             : 'h-100'} w-full transition-all duration-400 ease-out delay-200"
@@ -384,11 +327,11 @@
                                         <path d="M0 0.5H27" stroke="#616161" />
                                     </svg>
                                 </span>
-                                {product.category}
+                                {product.categoryName}
                             </p>
 
                             <p class="font-primary font-semibold text-[28px]">
-                                {product.type}
+                                {product.typeName}
                             </p>
                         </a>
                         <a href="/" aria-label="next-room">
@@ -419,7 +362,7 @@
             <Carousel.Dot></Carousel.Dot>
             <Carousel.Dot selected></Carousel.Dot>
         </div> -->
-        <Carousel.DotGroup/>
+        <Carousel.DotGroup />
         <Carousel.Next
             class="flex items-center justify-center absolute size-10 rounded-full end-18 top-1/2 -translate-y-1/2 group bg-surface-action-neutral-normal hover:bg-surface-action-neutral-hover shadow-2xl cursor-pointer"
         />
@@ -430,10 +373,18 @@
     <img src="/Group.png" alt="xibiuzinho" width="1784" height="735" class="w-446 h-183.75 object-contain">
 </section> -->
 
-<section class="relative w-full max-w-360 h-183.75 overflow-hidden">
-  <img
-    src="/Group.png"
-    alt="xibiuzinho"
-    class="w-full h-full object-cover"
-  />
+<section
+    class="flex flex-col items-center relative w-full max-w-360 h-183.75 overflow-hidden"
+>
+    <div class="flex flex-col items-center absolute">
+        <p class="font-primary text-body-md text-content-subtle font-semibold">
+            Share your setup with
+        </p>
+        <h3
+            class="font-primary text-heading-h4 text-content-heading font-semibold"
+        >
+            #FurniroFurniture
+        </h3>
+    </div>
+    <img src="/Group.png" alt="xibiuzinho" class="w-full h-full object-cover" />
 </section>
