@@ -35,9 +35,16 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.17.0",
+		"@node-rs/argon2": "^2.0.2",
+		"@oslojs/binary": "^1.0.0",
+		"@oslojs/crypto": "^1.0.1",
+		"@oslojs/encoding": "^1.1.0",
+		"@oslojs/otp": "^1.1.0",
+		"classnames": "^2.5.1",
 		"clsx": "^2.1.1",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.45.1",
-		"tailwind-merge": "^3.4.0"
+		"tailwind-merge": "^3.4.0",
+		"uqr": "^0.1.2"
 	}
 }

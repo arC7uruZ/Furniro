@@ -3,6 +3,8 @@
 @import "tw-animate-css";
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@source "../src/**/*.svelte";
+@source "../src/routes/(**)" ;
 
 @theme {
     --font-logo: Montserrat, sans-serif;

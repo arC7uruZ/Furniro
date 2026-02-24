@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { postCategory, postTable, postToCategory, userTable } from "$lib/db/schema";
+import { postCategory, postTable, postToCategory, userTable } from "$lib/server/db/schema";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
+import { db } from '$lib/server/db';
 
 export const GET = async ({ url, locals }) => {
 
@@ -22,7 +23,7 @@ export const GET = async ({ url, locals }) => {
         filters.push(inArray(postCategory.title, selectedCategories));
     }
 
-    const subqueryIds = locals.db
+    const subqueryIds = db
         .selectDistinct({ id: postTable.post_id })
         .from(postTable)
         .leftJoin(postToCategory, eq(postTable.post_id, postToCategory.post_id))
@@ -33,7 +34,7 @@ export const GET = async ({ url, locals }) => {
         .orderBy(desc(postTable.created_at))
         .as('subquery_ids');
 
-    const rows = await locals.db.select({
+    const rows = await db.select({
         post_id: postTable.post_id,
         title: postTable.title,
         content: postTable.content,
@@ -41,12 +42,12 @@ export const GET = async ({ url, locals }) => {
         img_alt: postTable.img_alt,
         created_at: postTable.created_at,
         updated_at: postTable.updated_at,
-        posted_by: userTable.username,
+        posted_by: postTable.posted_by,
         post_category: postCategory.title
     })
         .from(postTable)
         .innerJoin(subqueryIds, eq(postTable.post_id, subqueryIds.id))
-        .leftJoin(userTable, eq(postTable.posted_by, userTable.user_id))
+        // .leftJoin(userTable, eq(postTable.posted_by, userTable.user_id))
         .leftJoin(postToCategory, eq(postTable.post_id, postToCategory.post_id))
         .leftJoin(postCategory, eq(postToCategory.post_category_id, postCategory.post_category_id))
         .where(and(...filters)) // Aplica todos os filtros dinamicamente

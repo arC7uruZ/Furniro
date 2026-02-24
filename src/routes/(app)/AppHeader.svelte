@@ -1,0 +1,468 @@
+<script lang="ts">
+    import { invalidateAll } from "$app/navigation";
+    import { page } from "$app/state";
+    import AnchorButton from "$lib/public/AnchorButton.svelte";
+    import { cn } from "$lib/utils";
+    import {
+        ChevronDown,
+        ChevronRight,
+        Heart,
+        ShoppingCart,
+    } from "@lucide/svelte";
+    import { Button, NavigationMenu, Separator, Tooltip } from "bits-ui";
+
+    let { data } = $props();
+
+    const isActive = (path: string) => {
+        return page.url.pathname === path;
+    };
+</script>
+
+{#snippet NavItem(text: string, href: string)}
+    <NavigationMenu.Item>
+        <NavigationMenu.Link
+            {href}
+            data-active={isActive(href) ? true : undefined}
+            class={cn(
+                "py-2",
+                "px-4",
+                "text-content-heading",
+                "hover:text-content-action-hover",
+                "data-active:bg-surface-action-primary-normal",
+                "data-active:text-content-on-action-primary-normal",
+                "cursor-pointer",
+                "font-primary",
+                "text-body-md/normal",
+                "font-semibold",
+            )}
+        >
+            {text}
+        </NavigationMenu.Link>
+    </NavigationMenu.Item>
+{/snippet}
+<header
+    class={cn(
+        "relative",
+        "h-25",
+        "w-full",
+        "pl-12.5",
+        "pr-12.5",
+        "bg-surface-neutral",
+        "flex",
+        "justify-between",
+        "items-center",
+    )}
+>
+    <Button.Root
+        href="/"
+        class={cn(
+            "flex",
+            "gap-1.25",
+            "items-center",
+            "font-primary",
+            "text-4xl",
+            "font-semibold",
+            "p-sm",
+            "text-content-heading",
+            "cursor-pointer",
+        )}
+    >
+        <img src="/logo.svg" alt="User" />
+        Furniro
+    </Button.Root>
+    <NavigationMenu.Root class={cn("absolute", "left-1/2", "-translate-x-1/2")}>
+        <NavigationMenu.List
+            class={cn(
+                "flex",
+                "justify-between",
+                "items-center",
+                "font-primary",
+                "font-medium",
+                "text-navbar",
+            )}
+        >
+            <NavigationMenu.Item>
+                <NavigationMenu.Trigger
+                    class={cn(
+                        "py-2",
+                        "px-4",
+                        "text-content-heading",
+                        "hover:text-content-action-hover",
+                        "data-active:bg-surface-action-primary-normal",
+                        "data-active:text-content-on-action-primary-normal",
+                        "cursor-pointer",
+                        "font-primary",
+                        "text-body-md/normal",
+                        "font-semibold",
+                        "relative",
+                    )}
+                >
+                    Home
+                </NavigationMenu.Trigger>
+                <NavigationMenu.Content
+                    class={cn(
+                        "absolute",
+                        "p-2",
+                        "bg-white",
+                        "shadow-xl",
+                        "rounded-md",
+                    )}
+                >
+                    <ul class={cn("grid", "list-none", "gap-1", "px-2")}>
+                        <li>
+                            <NavigationMenu.Link href="/cart">Cart</NavigationMenu.Link>
+                        </li>
+                        <Separator.Root
+                            orientation="horizontal"
+                            class={cn(
+                                "bg-gray-300",
+                                "shrink-0",
+                                "data-[orientation=horizontal]:h-px",
+                                "data-[orientation=vertical]:h-full",
+                                "data-[orientation=horizontal]:w-full",
+                            )}
+                        />
+                        <li>
+                            <NavigationMenu.Link>Favourites</NavigationMenu.Link
+                            >
+                        </li>
+                        <Separator.Root
+                            orientation="horizontal"
+                            class={cn(
+                                "bg-gray-300",
+                                "shrink-0",
+                                "data-[orientation=horizontal]:h-px",
+                                "data-[orientation=vertical]:h-full",
+                                "data-[orientation=horizontal]:w-full",
+                            )}
+                        />
+                        <li>
+                            <NavigationMenu.Link>Orders</NavigationMenu.Link>
+                        </li>
+                    </ul>
+                </NavigationMenu.Content>
+            </NavigationMenu.Item>
+            <!-- {@render NavItem("Home", "/")} -->
+            {@render NavItem("Shop", "/shop")}
+            {@render NavItem("About", "/about")}
+            {@render NavItem("Contact", "/contact")}
+        </NavigationMenu.List>
+    </NavigationMenu.Root>
+    <div class={cn("flex", "items-center")}>
+        {#if data.user}
+            <NavigationMenu.Root
+                class={cn(
+                    "relative",
+                    "z-10",
+                    "flex",
+                    "w-full",
+                    "justify-center",
+                )}
+            >
+                <NavigationMenu.List
+                    class={cn(
+                        "group",
+                        "flex",
+                        "list-none",
+                        "items-center",
+                        "justify-center",
+                        "p-1",
+                    )}
+                >
+                    <NavigationMenu.Item>
+                        <NavigationMenu.Trigger
+                            class={cn(
+                                "hover:text-content-action-hover",
+                                "focus:text-content-action-hover",
+                                "data-[state=open]:shadow-2xl",
+                                "focus:outline-hidden",
+                                "group",
+                                "inline-flex",
+                                "h-8",
+                                "w-max",
+                                "items-center",
+                                "justify-center",
+                                "rounded-[7px]",
+                                "bg-transparent",
+                                "px-4",
+                                "py-2",
+                                "text-body-md",
+                                "font-semibold",
+                                "font-primary",
+                                "transition-colors",
+                                "hover:bg-white",
+                                "disabled:pointer-events-none",
+                                "disabled:opacity-50",
+                                "data-[state=open]:bg-white",
+                                "cursor-pointer",
+                            )}
+                        >
+                            <p>
+                                {data.user.username}
+                            </p>
+                            <ChevronDown
+                                class={cn(
+                                    "size-5",
+                                    "group-data-[state=open]:rotate-180",
+                                    "transition-transform",
+                                    "duration-200",
+                                )}
+                            />
+                        </NavigationMenu.Trigger>
+                        <NavigationMenu.Content
+                            class={cn(
+                                "bg-white",
+                                "absolute",
+                                "min-w-50",
+                                "left-1/2",
+                                "-translate-x-1/2",
+                                "top-10",
+                                "w-auto",
+                                "data-[state=closed]:hidden",
+                                "shadow-md",
+                                "rounded-md",
+                            )}
+                        >
+                            <ul class={cn("flex", "flex-col", "list-none")}>
+                                <li
+                                    class={cn(
+                                        "p-2",
+                                        "hover:bg-gray-100",
+                                        "rounded-t-md",
+                                    )}
+                                >
+                                    <a
+                                        href="/profile"
+                                        class={cn(
+                                            "flex",
+                                            "items-start",
+                                            "gap-4",
+                                        )}
+                                    >
+                                        <img
+                                            src="/bg-1.png"
+                                            alt="profile foto"
+                                            class={cn(
+                                                "rounded-full",
+                                                "size-12",
+                                                "border",
+                                            )}
+                                        />
+                                        <div
+                                            class={cn(
+                                                "flex",
+                                                "flex-col",
+                                                "items-start",
+                                            )}
+                                        >
+                                            <p
+                                                class={cn(
+                                                    "font-primary",
+                                                    "text-heading-h6/tight",
+                                                    "text-content-heading",
+                                                    "font-semibold",
+                                                )}
+                                            >
+                                                {data.user.username}
+                                            </p>
+                                            <div
+                                                class={cn(
+                                                    "flex",
+                                                    "items-center",
+                                                    "gap-1",
+                                                )}
+                                            >
+                                                <p
+                                                    class={cn(
+                                                        "font-primary",
+                                                        "text-sm/tight",
+                                                        "text-content-subtle",
+                                                        "font-semibold",
+                                                    )}
+                                                >
+                                                    perfil
+                                                </p>
+                                                <ChevronRight
+                                                    class={cn(
+                                                        "size-3",
+                                                        "hover:scale-140",
+                                                        "transition-transform",
+                                                        "duration-100",
+                                                    )}
+                                                    strokeWidth="4"
+                                                />
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <Separator.Root
+                                    orientation="horizontal"
+                                    class={cn(
+                                        "bg-gray-300",
+                                        "shrink-0",
+                                        "data-[orientation=horizontal]:h-px",
+                                        "data-[orientation=vertical]:h-full",
+                                        "data-[orientation=horizontal]:w-full",
+                                    )}
+                                />
+                                <li class="px-2">Compras</li>
+                                <li
+                                    class={cn(
+                                        "outline-hidden",
+                                        "px-2",
+                                        "py-1",
+                                        "flex",
+                                        "h-full",
+                                        "w-full",
+                                        "select-none",
+                                        "flex-col",
+                                        "items-start",
+                                        "justify-end",
+                                        "rounded-md",
+                                        "no-underline",
+                                        "focus:shadow-md",
+                                    )}
+                                >
+                                    <button
+                                        onclick={async () => {
+                                            const response = await fetch(
+                                                "logout",
+                                                {
+                                                    method: "POST",
+                                                },
+                                            );
+
+                                            if (response.ok) {
+                                                await invalidateAll();
+                                            }
+                                        }}
+                                        class={cn("cursor-pointer")}
+                                        >Sair</button
+                                    >
+                                </li>
+                            </ul>
+                        </NavigationMenu.Content>
+                    </NavigationMenu.Item>
+                </NavigationMenu.List>
+            </NavigationMenu.Root>
+        {:else}
+            <a href="/login">Login</a>
+        {/if}
+        <AnchorButton>
+            <Tooltip.Provider>
+                <Tooltip.Root delayDuration={200}>
+                    <Tooltip.Trigger
+                        class={cn(
+                            "size-7",
+                            "text-content-on-action-neutral-normal",
+                            "hover:text-content-on-action-neutral-hover",
+                            "cursor-pointer",
+                        )}
+                    >
+                        <Heart />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                        sideOffset={8}
+                        class={cn(
+                            "animate-in",
+                            "fade-in-0",
+                            "zoom-in-95",
+                            "data-[state=closed]:animate-out",
+                            "data-[state=closed]:fade-out-0",
+                            "data-[state=closed]:zoom-out-95",
+                            "data-[side=bottom]:slide-in-from-top-2",
+                            "data-[side=left]:slide-in-from-right-2",
+                            "data-[side=right]:slide-in-from-left-2",
+                            "data-[side=top]:slide-in-from-bottom-2",
+                            "origin-(--bits-tooltip-content-transform-origin)",
+                        )}
+                    >
+                        <div
+                            class={cn(
+                                "rounded-md",
+                                "border-gray-800",
+                                "bg-gray-700",
+                                "shadow-popover",
+                                "outline-hidden",
+                                "z-0",
+                                "flex",
+                                "items-center",
+                                "justify-center",
+                                "border",
+                                "p-3",
+                                "text-sm",
+                                "font-medium",
+                                "text-white",
+                            )}
+                        >
+                            Favoritos
+                        </div>
+                    </Tooltip.Content>
+                </Tooltip.Root>
+            </Tooltip.Provider>
+        </AnchorButton>
+        <AnchorButton>
+            <Tooltip.Provider>
+                <Tooltip.Root delayDuration={200}>
+                    <Tooltip.Trigger
+                        class={cn(
+                            "size-7",
+                            "text-content-on-action-neutral-normal",
+                            "hover:text-content-on-action-neutral-hover",
+                            "cursor-pointer",
+                        )}
+                    >
+                        <ShoppingCart />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                        sideOffset={8}
+                        class={cn(
+                            "animate-in",
+                            "fade-in-0",
+                            "zoom-in-95",
+                            "data-[state=closed]:animate-out",
+                            "data-[state=closed]:fade-out-0",
+                            "data-[state=closed]:zoom-out-95",
+                            "data-[side=bottom]:slide-in-from-top-2",
+                            "data-[side=left]:slide-in-from-right-2",
+                            "data-[side=right]:slide-in-from-left-2",
+                            "data-[side=top]:slide-in-from-bottom-2",
+                            "origin-(--bits-tooltip-content-transform-origin)",
+                        )}
+                    >
+                        <div
+                            class={cn(
+                                "rounded-md",
+                                "border-gray-800",
+                                "bg-gray-700",
+                                "shadow-popover",
+                                "outline-hidden",
+                                "z-0",
+                                "flex",
+                                "items-center",
+                                "justify-center",
+                                "border",
+                                "p-3",
+                                "text-sm",
+                                "font-medium",
+                                "text-white",
+                            )}
+                        >
+                            Carrinho
+                        </div>
+                    </Tooltip.Content>
+                </Tooltip.Root>
+            </Tooltip.Provider>
+        </AnchorButton>
+        <!-- <AnchorButton>
+                    <Search
+                        class={cn(
+                            "size-7",
+                            "text-content-on-action-neutral-normal",
+                            "hover:text-content-on-action-neutral-hover",
+                            "cursor-pointer",
+                        )}
+                    />
+                </AnchorButton> -->
+    </div>
+</header>

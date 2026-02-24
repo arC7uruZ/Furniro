@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
+    import { cn } from "$lib/utils";
 
     const route = page.url.pathname.split("/").filter(Boolean).at(-1);
     const routeName = route ? route[0].toUpperCase() + route.slice(1) : "";
@@ -18,12 +19,39 @@
 </script>
 
 <header
-    class="flex items-center justify-center relative overflow-hidden min-h-85 w-full before:bg-[url('/bg-blur.png')] before:scale-110 before:blur-xs before:absolute before:bg-cover before:bg-center before:-z-1 before:size-full"
+    class={cn(
+        "flex",
+        "items-center",
+        "justify-center",
+        "relative",
+        "overflow-hidden",
+        "min-h-85",
+        "w-full",
+        "before:bg-[url('/bg-blur.png')]",
+        "before:bg-cover",
+        "before:bg-center",
+        "before:scale-110",
+        "before:blur-xs",
+        "before:absolute",
+        "before:-z-1",
+        "before:size-full",
+    )}
 >
     <div
-        class="flex flex-col items-center gap-4 bg-[url('/logo.svg')] bg-top pt-12 bg-no-repeat"
+        class={cn(
+            "flex",
+            "flex-col",
+            "items-center",
+            "gap-4",
+            "bg-[url('/logo.svg')]",
+            "bg-top",
+            "pt-12",
+            "bg-no-repeat",
+        )}
     >
-        <h1 class="font-primary text-heading-h2 font-semibold">{routeName}</h1>
+        <h1 class={cn("font-primary", "text-heading-h2", "font-semibold")}>
+            {routeName}
+        </h1>
         <nav>
             <ol class="flex items-center">
                 <li
@@ -33,7 +61,14 @@
                 </li>
                 {#each breadcrumbs as bread}
                     <li
-                        class="before:content-['>'] before:mx-2 font-primary text-body-md font-regular text-content-heading"
+                        class={cn(
+                            "before:content-['>']",
+                            "before:mx-2",
+                            "font-primary",
+                            "text-body-md",
+                            "font-regular",
+                            "text-content-heading",
+                        )}
                     >
                         <a href={bread.href} class="cursor-pointer">
                             {bread.label}
