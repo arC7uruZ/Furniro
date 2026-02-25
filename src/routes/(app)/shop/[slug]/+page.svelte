@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from "$app/state";
     import * as Breadcrumb from "$lib/components/ui/breadcrumb";
-    import { cn } from "$lib/utils";
+    import { formatPrice } from "$lib/utils";
     import { Separator } from "bits-ui";
     import type { PageProps } from "./$types";
     import ImageCarousel from "./ImageCarousel.svelte";
+    import { cn } from "tailwind-variants";
 
     let { params, data }: PageProps = $props();
 
@@ -19,7 +20,7 @@
 
     segments.pop();
     // svelte-ignore state_referenced_locally
-        segments.push(product.title);
+    segments.push(product.title);
     const breadcrumbs = segments.map((segment, index) => {
         const href = "/" + segments.slice(0, index + 1).join("/");
 
@@ -35,6 +36,10 @@
             href,
         };
     });
+
+    let selectedSize = $state("");
+    let selectedColor = $state("");
+    console.log(product.colors);
 </script>
 
 <div
@@ -45,7 +50,7 @@
         "flex",
         "justify-start",
         "items-center",
-        "ps-10"
+        "ps-10",
     )}
 >
     <Breadcrumb.Root>
@@ -85,4 +90,132 @@
     </Breadcrumb.Root>
 </div>
 
-<ImageCarousel images={product.images}/>
+<main class={cn("flex")}>
+    <ImageCarousel images={product.images} />
+    <div class={cn("flex", "flex-col", "gap-2", "p-10")}>
+        <div>
+            <h2
+                class={cn(
+                    "font-primary",
+                    "font-semibold",
+                    "text-5xl",
+                    "text-content-heading",
+                )}
+            >
+                {product.title}
+            </h2>
+            <p
+                class={cn(
+                    "font-primary",
+                    "text-content-subtle",
+                    "text-base",
+                    "font-semibold",
+                )}
+            >
+                {formatPrice(product.price)}
+            </p>
+        </div>
+        <p
+            class={cn(
+                "font-primary",
+                "text-content-body",
+                "text-base",
+                "font-normal",
+            )}
+        >
+            {product.shortDescription}
+        </p>
+        <form class={cn("flex", "flex-col", "gap-4")}>
+            <div class={cn("flex", "flex-col", "gap-2")}>
+                <p
+                    class={cn(
+                        "font-primary",
+                        "text-body-md",
+                        "font-normal",
+                        "text-content-subtle",
+                    )}
+                >
+                    Size
+                </p>
+                <div class={cn("flex", "gap-2")}>
+                    {#each product.sizes as size}
+                        <label>
+                            <input
+                                type="radio"
+                                name="size-selection"
+                                value={size}
+                                bind:group={selectedSize}
+                                class={cn("peer", "sr-only")}
+                            />
+                            <p
+                                class={cn(
+                                    "flex",
+                                    "items-center",
+                                    "justify-center",
+                                    "size-8",
+                                    "rounded-md",
+                                    "text-body-sm",
+                                    "font-primary",
+                                    "font-regular",
+                                    "border",
+                                    "transition-all",
+                                    "bg-white",
+                                    "border-gray-300",
+                                    "peer-checked:bg-primary",
+                                    "peer-checked:text-white",
+                                    "peer-checked:border-primary",
+                                    "peer-focus-visible:ring-2",
+                                    "peer-focus-visible:ring-offset-2",
+                                    "peer-focus-visible:ring-primary",
+                                    "hover:border-primary/50",
+                                    "cursor-pointer",
+                                )}
+                            >
+                                {size}
+                            </p>
+                        </label>
+                    {/each}
+                </div>
+            </div>
+            <div class={cn("flex", "flex-col", "gap-2")}>
+                <p
+                    class={cn(
+                        "font-primary",
+                        "text-body-md",
+                        "font-normal",
+                        "text-content-subtle",
+                    )}
+                >
+                    Color
+                </p>
+                <div class={cn("flex", "gap-4")}>
+                    {#each product.colors as color}
+                        <label>
+                            <input
+                                type="radio"
+                                name="color-selection"
+                                value={color}
+                                bind:group={selectedColor}
+                                class={cn("peer", "sr-only")}
+                            />
+                            <div
+                                class={cn(
+                                    "size-7",
+                                    "rounded-full",
+                                    "transition-colors",
+                                    "opacity-30",
+                                    "peer-checked:opacity-100",
+                                    "peer-focus-visible:ring-2",
+                                    "peer-focus-visible:ring-offset-2",
+                                    "peer-focus-visible:ring-primary",
+                                    "cursor-pointer",
+                                )}
+                                style:background-color={color.rgb}
+                            ></div>
+                        </label>
+                    {/each}
+                </div>
+            </div>
+        </form>
+    </div>
+</main>

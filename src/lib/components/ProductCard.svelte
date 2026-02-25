@@ -7,6 +7,7 @@
         type Icon as IconType,
     } from "@lucide/svelte";
     import { cn } from "tailwind-variants";
+    import { formatPrice } from "$lib/utils";
 
     let {
         imgSrc,
@@ -19,13 +20,6 @@
         showOutlier = false,
         slug = ""
     } = $props();
-
-    const formatPrice = (price: number) => {
-        return Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        }).format(price);
-    };
 </script>
 
 {#snippet tag(type: "new" | "discount", value: string)}

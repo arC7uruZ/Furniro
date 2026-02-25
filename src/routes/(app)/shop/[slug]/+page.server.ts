@@ -16,7 +16,8 @@ export const load: PageServerLoad = async ({ params }) => {
         imgAlt: ImageTable.imgAlt,
         imgOrder: ImageTable.order,
         size: SizeTable.title,
-        color: ColorTable.title,
+        colorTitle: ColorTable.title,
+        colorRgb: ColorTable.rgb,
     }).from(ProductTable)
         .innerJoin(ImageTable, eq(ProductTable.id, ImageTable.productId))
         .innerJoin(StockTable, eq(StockTable.productId, ProductTable.id))
@@ -37,7 +38,10 @@ export const load: PageServerLoad = async ({ params }) => {
             imgOrder: number
         }[],
         sizes: string[],
-        colors: string[],
+        colors: {
+            title: string,
+            rgb: string
+        }[],
     }>();
 
     for (const row of rows) {
@@ -67,9 +71,9 @@ export const load: PageServerLoad = async ({ params }) => {
             }
         }
 
-        if (row.color) {
-            if (productsMap.get(row.id)!.colors.indexOf(row.color) < 0) {
-                productsMap.get(row.id)!.colors.push(row.color);
+        if (row.colorTitle) {
+            if (!productsMap.get(row.id)!.colors.find((color) => color.title === row.colorTitle)) {
+                productsMap.get(row.id)!.colors.push({title: row.colorTitle, rgb: row.colorRgb});
             }
         }
     }
