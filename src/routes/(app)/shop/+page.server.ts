@@ -15,6 +15,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     const products = await db.select({
         title: ProductTable.title,
         description: ProductTable.shortDescription,
+        slug: ProductTable.slug,
         price: ProductTable.price,
         imgSrc: ImageTable.imgSrc,
         imgAlt: ImageTable.imgAlt,

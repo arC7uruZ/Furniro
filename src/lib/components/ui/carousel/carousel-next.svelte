@@ -6,18 +6,18 @@
 	import { type Props } from "$lib/components/ui/button/index.js";
     import { Button } from "bits-ui";
 
-	// let {
-	// 	ref = $bindable(null),
-	// 	class: className,
-	// 	variant = "outline",
-	// 	size = "icon",
-	// 	...restProps
-	// }: WithoutChildren<Props> = $props();
+	let {
+		ref = $bindable(null),
+		class: className,
+		// variant = "outline",
+		// size = "icon",
+		...restProps
+	}: WithoutChildren<Props> = $props();
 
-    let {
-        ref = $bindable(null),
-        ...restProps
-    } = $props();
+    // let {
+    //     ref = $bindable(null),
+    //     ...restProps
+    // } = $props();
 
 	const emblaCtx = getEmblaContext("<Carousel.Next/>");
 </script>

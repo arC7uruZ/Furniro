@@ -20,6 +20,7 @@
     } from "bits-ui";
     import type { PageProps } from "./$types";
     import { SvelteMap } from "svelte/reactivity";
+    import ProductCard from "$lib/components/ProductCard.svelte";
 
     let { data }: PageProps = $props();
 
@@ -35,7 +36,7 @@
 
     let nameFilter = $derived(filter.get("name") || "");
     let typeFilter = $derived(filter.get("type") || "");
-    let categoryFilter = $derived(filter.get("category") || "");
+    let setFilter = $derived(filter.get("set") || "");
     let discountFilter = $derived(filter.get("discount") || false) as boolean;
     let newFilter = $derived(filter.get("new") || false) as boolean;
     let value = $derived([
@@ -78,10 +79,10 @@
     });
 
     $effect(() => {
-        if (categoryFilter !== "") {
-            filter.set("category", categoryFilter);
+        if (setFilter !== "") {
+            filter.set("set", setFilter);
         } else {
-            filter.delete("category");
+            filter.delete("set");
         }
     });
 
@@ -112,7 +113,7 @@
     let totalProducts = $derived(data.meta.total);
     let queryParams = $derived.by(() => {
         let params = new URLSearchParams();
-        console.log(params.toString())
+        console.log(params.toString());
 
         for (const [key, value] of filter) {
             params.append(key, String(value));
@@ -182,7 +183,9 @@
             <div class="flex items-center gap-7">
                 <div class="flex gap-2 items-center">
                     <Sheet.Root>
-                        <Sheet.Trigger class="flex items-center gap-2 cursor-pointer">
+                        <Sheet.Trigger
+                            class="flex items-center gap-2 cursor-pointer"
+                        >
                             <SlidersHorizontal />
                             <h3>filter</h3>
                         </Sheet.Trigger>
@@ -213,9 +216,9 @@
                                             <p>
                                                 {#if typeof filterItem[1] !== "boolean"}
                                                     {filterItem[0]}:
-                                                    <strong
-                                                        >{filterItem[1]}</strong
-                                                    >
+                                                    <strong>
+                                                        {filterItem[1]}
+                                                    </strong>
                                                 {:else}
                                                     {filterItem[0]}
                                                 {/if}
@@ -264,7 +267,7 @@
                                             id="filter-by-name"
                                             type="radio"
                                             name="type"
-                                            value="Inner Piece"
+                                            value="inner"
                                             class="checked:bg-black"
                                             bind:group={typeFilter}
                                         />
@@ -279,7 +282,7 @@
                                             id="filter-by-name"
                                             type="radio"
                                             name="type"
-                                            value="Outer Piece"
+                                            value="outer"
                                             class="checked:bg-black"
                                             bind:group={typeFilter}
                                         />
@@ -307,7 +310,7 @@
                                             name="category"
                                             value="Dinner"
                                             class="checked:bg-black"
-                                            bind:group={categoryFilter}
+                                            bind:group={setFilter}
                                         />
                                         <label
                                             for="filter-by-name"
@@ -322,22 +325,23 @@
                                             name="category"
                                             value="Living"
                                             class="checked:bg-black"
-                                            bind:group={categoryFilter}
+                                            bind:group={setFilter}
                                         />
                                         <label
                                             for="filter-by-name"
                                             class="font-primary text-[18px] font-regular"
-                                            >Living</label
                                         >
+                                            Living
+                                        </label>
                                     </div>
                                     <div>
                                         <input
                                             id="filter-by-name"
                                             type="radio"
                                             name="category"
-                                            value="Bed Room"
+                                            value="BedRoom"
                                             class="checked:bg-black"
-                                            bind:group={categoryFilter}
+                                            bind:group={setFilter}
                                         />
                                         <label
                                             for="filter-by-name"
@@ -599,117 +603,10 @@
         <ul
             class="grid grid-cols-4 gap-8 grid-rows-2 w-full justify-items-center"
         >
-            {#snippet tag(type: "new" | "discount", value: string)}
-                <div
-                    class="absolute top-5 right-5 flex justify-center items-center size-12 rounded-full {type ===
-                    'new'
-                        ? 'bg-green-400'
-                        : 'bg-red-400'} text-content-secondary font-primary font-medium text-base"
-                >
-                    {value}
-                </div>
-            {/snippet}
-            {#snippet ProductCard(
-                title: string,
-                description: string,
-                price: number,
-                src: string,
-                alt: string,
-                addedToCatalogDate: Date,
-                discount: number | null,
-            )}
-                <li>
-                    <a
-                        href="/"
-                        class="flex flex-col group w-71.25 h-111.5 relative"
-                    >
-                        <img
-                            {src}
-                            {alt}
-                            width="285"
-                            height="301"
-                            class="object-cover w-71.25 h-75.25 object-center"
-                        />
-                        <div
-                            class="flex-1 flex flex-col justify-evenly p-4 bg-surface-subtle"
-                        >
-                            <h4 class="font-primary font-semibold text-2xl">
-                                {title}
-                            </h4>
-                            <p
-                                class="font-primary font-medium text-base text-content-subtle"
-                            >
-                                {description}
-                            </p>
-                            <div class="flex justify-between items-center">
-                                {#if discount}
-                                    <p
-                                        class="font-primary font-semibold text-xl"
-                                    >
-                                        {formatPrice(
-                                            (price * (100 - discount)) / 100,
-                                        )}
-                                    </p>
-                                    <p
-                                        class="font-primary font-medium text-base text-content-subtle line-through"
-                                    >
-                                        {formatPrice(price)}
-                                    </p>
-                                {:else}
-                                    <p
-                                        class="font-primary font-semibold text-xl"
-                                    >
-                                        {formatPrice(price)}
-                                    </p>
-                                {/if}
-                            </div>
-                        </div>
-                        {#if discount}
-                            {@render tag("discount", `-${discount}%`)}
-                        {:else if new Date().getTime() - addedToCatalogDate.getTime() < 1000 * 60 * 60 * 24 * 150}
-                            {@render tag("new", "New")}
-                        {/if}
-                        <!-- <div
-                            class="flex flex-col gap-sm p-xs justify-center items-center pointer-events-none opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto transition-all duration-300 ease-out size-full absolute bg-black/50"
-                        >
-                            <Button.Root
-                                class="px-2xl py-sm font-primary font-semibold text-heading-h6 text-content-on-action-secondary-normal hover:text-content-on-action-primary-hover bg-surface-action-neutral-normal cursor-pointer hover:bg-surface-action-primary-hover"
-                            >
-                                Add to Cart
-                            </Button.Root>
-                            {#snippet IconButton(
-                                text: string,
-                                icon: typeof IconType,
-                            )}
-                                {@const Icon = icon}
-                                <Button.Root
-                                    class="flex items-center px-xs py-2xs text-body-md/tight text-content-on-action-primary-normal hover:bg-surface-action-primary-hover font-semibold cursor-pointer gap-1"
-                                >
-                                    <Icon class="size-5" />
-                                    {text}
-                                </Button.Root>
-                            {/snippet}
-                            <div
-                                class="flex justify-between text-content-on-action w-full"
-                            >
-                                {@render IconButton("Share", Share2)}
-                                {@render IconButton("Compare", ArrowRightLeft)}
-                                {@render IconButton("Like", Heart)}
-                            </div>
-                        </div> -->
-                    </a>
-                </li>
-            {/snippet}
             {#each products as product}
-                {@render ProductCard(
-                    product.title,
-                    product.description,
-                    product.price,
-                    product.imgSrc,
-                    product.imgAlt,
-                    new Date(product.createdAt),
-                    product.discount,
-                )}
+                <li>
+                    <ProductCard {...product}/>
+                </li>
             {/each}
         </ul>
         <Pagination.Root count={totalProducts} perPage={pageSize} bind:page>

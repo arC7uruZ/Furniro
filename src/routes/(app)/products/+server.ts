@@ -1,9 +1,9 @@
 import { db } from '$lib/server/db';
-import { ImageTable, ProductCategoryTable, ProductSetTable, ProductTable, SetTable } from '$lib/server/db/schema.js';
-import { and, asc, count, desc, eq, gte, like, lte, min, ne } from 'drizzle-orm';
+import { ImageTable, ProductSetTable, ProductTable, SetTable } from '$lib/server/db/schema.js';
+import { and, asc, count, desc, eq, gte, like, lte, ne } from 'drizzle-orm';
 
 
-export async function GET({ url, locals }) {
+export async function GET({ url }) {
     const pageSize = Number(url.searchParams.get('pageSize') ?? 8);
     const page = Number(url.searchParams.get('page') ?? 1);
 
@@ -66,6 +66,7 @@ export async function GET({ url, locals }) {
         id: ProductTable.id,
         title: ProductTable.title,
         description: ProductTable.shortDescription,
+        slug: ProductTable.slug,
         price: ProductTable.price,
         discount: ProductTable.discount,
         set: SetTable.title,
@@ -84,7 +85,7 @@ export async function GET({ url, locals }) {
         .innerJoin(ImageTable, and(eq(ImageTable.productId, ProductTable.id), eq(ImageTable.order, 0)))
 
     if (setFilter) {
-        where.push(eq(SetTable.title, setFilter));
+        where.push(eq(SetTable.title, setFilter.toLowerCase()));
     }
 
     if (typeFilter) {

@@ -3,7 +3,7 @@
     import type { CarouselAPI } from "$lib/components/ui/carousel/context.js";
     import { Button } from "bits-ui";
     import type { PageProps } from "./$types";
-    import ProductCard from "./ProductCard.svelte";
+    import ProductCard from "$lib/components/ProductCard.svelte";
     import { cn } from "tailwind-variants";
 
     let { data }: PageProps = $props();
@@ -163,7 +163,7 @@
     <ul class="grid grid-cols-4 gap-8 grid-rows-2">
         {#each products as product}
             <li>
-                <ProductCard {...product} />
+                <ProductCard {...product} showOutlier />
             </li>
         {/each}
     </ul>

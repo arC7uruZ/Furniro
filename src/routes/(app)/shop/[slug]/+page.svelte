@@ -2,11 +2,13 @@
     import { page } from "$app/state";
     import * as Breadcrumb from "$lib/components/ui/breadcrumb";
     import { cn } from "$lib/utils";
-    import { ChevronRight } from "@lucide/svelte";
-    import type { PageProps } from "./$types";
     import { Separator } from "bits-ui";
+    import type { PageProps } from "./$types";
+    import ImageCarousel from "./ImageCarousel.svelte";
 
-    let { params }: PageProps = $props();
+    let { params, data }: PageProps = $props();
+
+    const product = $derived(data.product);
 
     const route = page.url.pathname.split("/").filter(Boolean).at(-1);
     const routeName = route ? route[0].toUpperCase() + route.slice(1) : "";
@@ -14,6 +16,10 @@
     const segments: Array<string> = page.url.pathname
         .split("/")
         .filter(Boolean);
+
+    segments.pop();
+    // svelte-ignore state_referenced_locally
+        segments.push(product.title);
     const breadcrumbs = segments.map((segment, index) => {
         const href = "/" + segments.slice(0, index + 1).join("/");
 
@@ -78,3 +84,5 @@
         </Breadcrumb.List>
     </Breadcrumb.Root>
 </div>
+
+<ImageCarousel images={product.images}/>
