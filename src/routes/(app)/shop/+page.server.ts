@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     let queryCount = await db.select({ count: count() }).from(ProductTable);
 
-    console.log(`products: ${JSON.stringify(products)}`);
+    // console.log(`products: ${JSON.stringify(products)}`);
 
     return {
         priceRange,

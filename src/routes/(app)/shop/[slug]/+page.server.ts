@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db";
-import { ColorTable, ImageTable, ProductTable, SizeTable, StockTable } from "$lib/server/db/schema";
+import { CategoryTable, ColorTable, ImageTable, ProductCategoryTable, ProductTable, ProductTagTable, SizeTable, StockTable, TagTable } from "$lib/server/db/schema";
 import { eq } from "drizzle-orm";
 import type { PageServerLoad } from "./$types";
 
@@ -12,6 +12,9 @@ export const load: PageServerLoad = async ({ params }) => {
         description: ProductTable.description,
         price: ProductTable.price,
         innerPiece: ProductTable.innerPiece,
+        category: CategoryTable.title,
+        tag: TagTable.title,
+        sku: StockTable.sku,
         imgSrc: ImageTable.imgSrc,
         imgAlt: ImageTable.imgAlt,
         imgOrder: ImageTable.order,
@@ -20,6 +23,10 @@ export const load: PageServerLoad = async ({ params }) => {
         colorRgb: ColorTable.rgb,
     }).from(ProductTable)
         .innerJoin(ImageTable, eq(ProductTable.id, ImageTable.productId))
+        .innerJoin(ProductCategoryTable, eq(ProductTable.id, ProductCategoryTable.productId))
+        .innerJoin(CategoryTable, eq(ProductCategoryTable.categoryId, CategoryTable.id))
+        .innerJoin(ProductTagTable, eq(ProductTagTable.productId, ProductTable.id))
+        .innerJoin(TagTable, eq(ProductTagTable.tagId, TagTable.id))
         .innerJoin(StockTable, eq(StockTable.productId, ProductTable.id))
         .innerJoin(SizeTable, eq(StockTable.sizeId, SizeTable.id))
         .innerJoin(ColorTable, eq(StockTable.colorId, ColorTable.id))
@@ -32,6 +39,9 @@ export const load: PageServerLoad = async ({ params }) => {
         description: string,
         price: number,
         innerPiece: boolean,
+        sku: string,
+        category: string,
+        tags: string[],
         images: {
             imgSrc: string,
             imgAlt: string,
@@ -53,6 +63,9 @@ export const load: PageServerLoad = async ({ params }) => {
                 description: row.description,
                 price: row.price,
                 innerPiece: row.innerPiece,
+                sku: row.sku,
+                category: row.category,
+                tags: [],
                 images: [],
                 sizes: [],
                 colors: [],
@@ -74,6 +87,12 @@ export const load: PageServerLoad = async ({ params }) => {
         if (row.colorTitle) {
             if (!productsMap.get(row.id)!.colors.find((color) => color.title === row.colorTitle)) {
                 productsMap.get(row.id)!.colors.push({title: row.colorTitle, rgb: row.colorRgb});
+            }
+        }
+
+        if (row.tag) {
+            if (!productsMap.get(row.id)!.tags.find((tag) => tag === row.tag)) {
+                productsMap.get(row.id)!.tags.push(row.tag);
             }
         }
     }

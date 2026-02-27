@@ -7,7 +7,7 @@
     } from "embla-carousel";
     import useEmblaCarousel from "embla-carousel-svelte";
     import { cn } from "tailwind-variants";
-    let { images } = $props();
+    let { images, zoomTarget } = $props();
 
     let emblaApi: EmblaCarouselType;
     let emblaApiThumb: EmblaCarouselType;
@@ -57,6 +57,25 @@
     const onInitThumb = (event: CustomEvent<EmblaCarouselType>) => {
         emblaApiThumb = event.detail;
         console.log(emblaApiThumb.slideNodes());
+    };
+
+    const portal = (node: HTMLElement, targetSelector: string) => {
+        let target = document.querySelector(targetSelector);
+
+        if (!target) {
+            console.warn(`Alvo do portal "${targetSelector}" não encontrado.`);
+            return;
+        }
+
+        target.appendChild(node);
+
+        return {
+            destroy() {
+                if (node.parentNode) {
+                    node.parentNode.removeChild(node);
+                }
+            },
+        };
     };
 </script>
 
@@ -133,7 +152,12 @@
                             <img
                                 src={image.imgSrc}
                                 alt={image.imgAlt}
-                                class={cn("size-100", "rounded-xl")}
+                                class={cn(
+                                    "size-100",
+                                    "rounded-xl",
+                                    "object-contain",
+                                    "object-center",
+                                )}
                             />
                             {#if showZoom}
                                 <div
@@ -144,8 +168,8 @@
                                         "border-gray-400",
                                         "bg-white/20",
                                         "shadow-lg",
-                                        "size-37.5",
-                                        "-translate-1/2"
+                                        "size-33.5",
+                                        "-translate-1/2",
                                     )}
                                     style:top="{zoomPos.y}%"
                                     style:left="{zoomPos.x}%"
@@ -195,13 +219,14 @@
         </div>
     </div>
 
-    <!-- {#if showZoom}
+    {#if showZoom}
         <div
-            class="z-50 size-120 border-2 border-gray-100 shadow-2xl rounded-xl bg-white overflow-hidden"
+            use:portal={zoomTarget}
+            class="z-50 border-2 border-gray-100 shadow-2xl rounded-xl bg-white overflow-hidden absolute inset-0 aspect-square"
             style:background-image="url({images[selectedIndex].imgSrc})"
             style:background-size="300%"
             style:background-position="{zoomPos.x}% {zoomPos.y}%"
             style:background-repeat="no-repeat"
         ></div>
-    {/if} -->
+    {/if}
 </div>

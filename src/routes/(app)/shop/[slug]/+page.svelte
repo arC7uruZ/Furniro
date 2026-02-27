@@ -6,6 +6,7 @@
     import type { PageProps } from "./$types";
     import ImageCarousel from "./ImageCarousel.svelte";
     import { cn } from "tailwind-variants";
+    import { Minus, Plus } from "@lucide/svelte";
 
     let { params, data }: PageProps = $props();
 
@@ -39,7 +40,7 @@
 
     let selectedSize = $state("");
     let selectedColor = $state("");
-    console.log(product.colors);
+    let selectedQuantity = $state(1);
 </script>
 
 <div
@@ -90,9 +91,12 @@
     </Breadcrumb.Root>
 </div>
 
-<main class={cn("flex")}>
-    <ImageCarousel images={product.images} />
-    <div class={cn("flex", "flex-col", "gap-2", "p-10")}>
+<main class={cn("flex", "items-start", "gap-16", "p-16")}>
+    <ImageCarousel images={product.images} zoomTarget="#product-info" />
+    <div
+        id="product-info"
+        class={cn("flex", "flex-col", "gap-4", "p-10", "relative")}
+    >
         <div>
             <h2
                 class={cn(
@@ -125,7 +129,7 @@
         >
             {product.shortDescription}
         </p>
-        <form class={cn("flex", "flex-col", "gap-4")}>
+        <form class={cn("flex", "flex-col", "gap-8")}>
             <div class={cn("flex", "flex-col", "gap-2")}>
                 <p
                     class={cn(
@@ -142,7 +146,7 @@
                         <label>
                             <input
                                 type="radio"
-                                name="size-selection"
+                                name="size"
                                 value={size}
                                 bind:group={selectedSize}
                                 class={cn("peer", "sr-only")}
@@ -193,8 +197,8 @@
                         <label>
                             <input
                                 type="radio"
-                                name="color-selection"
-                                value={color}
+                                name="color"
+                                value={color.title}
                                 bind:group={selectedColor}
                                 class={cn("peer", "sr-only")}
                             />
@@ -216,6 +220,69 @@
                     {/each}
                 </div>
             </div>
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-stretch w-fit">
+                    <button
+                        disabled={selectedQuantity === 0}
+                        class="border-y-2 border-s-2 px-2 rounded-tl-md rounded-bl-md cursor-pointer border-gray-300 text-content-body disabled:text-content-disabled"
+                        onclick={() => {
+                            if (selectedQuantity > 0) selectedQuantity--;
+                        }}
+                    >
+                        <Minus size="16" />
+                    </button>
+                    <label class="-z-10">
+                        <input
+                            name="quantity"
+                            type="text"
+                            class="w-12 font-primary text-content-body text-base text-center border-y-2 border-x-0 border-gray-300"
+                            bind:value={selectedQuantity}
+                        />
+                    </label>
+                    <button
+                        class="border-y-2 border-e-2 px-2 rounded-tr-md rounded-br-md cursor-pointer border-gray-300 text-content-body"
+                        onclick={() => selectedQuantity++}
+                    >
+                        <Plus size="16" />
+                    </button>
+                </div>
+                <button
+                    class={cn(
+                        "px-8",
+                        "py-2",
+                        "border-2",
+                        "border-gray-500",
+                        "rounded-md",
+                        "font-primary",
+                        "text-base",
+                        "font-medium",
+                        "whitespace-nowrap"
+                    )}
+                >
+                    Add to Cart
+                </button>
+                <button
+                    class={cn(
+                        "px-8",
+                        "py-2",
+                        "border-2",
+                        "border-gray-500",
+                        "rounded-md",
+                        "font-primary",
+                        "text-base",
+                        "font-medium",
+                        "flex"
+                    )}
+                >
+                    <Plus/>
+                    Compare
+                </button>
+            </div>
         </form>
+        <Separator.Root orientation="horizontal" class="h-0.5 my-8 bg-gray-300"/>
+        <div>
+            <p>Category: {product.category}</p>
+            <p>Tags: {product.tags}</p>
+        </div>
     </div>
 </main>
