@@ -11,7 +11,7 @@
 
     let emblaApi: EmblaCarouselType;
     let emblaApiThumb: EmblaCarouselType;
-    let options: EmblaOptionsType = { loop: false };
+    let options: EmblaOptionsType = { loop: true };
     let thumbsOptions: EmblaOptionsType = {
         loop: false,
         axis: "y",
@@ -29,18 +29,81 @@
     };
 
     let showZoom = $state(false);
-    let zoomPos = $state({ x: 0, y: 0 });
+    let zoomInfo = $state({
+        littleRectPercentX: 0,
+        littleRectPercentY: 0,
+        bigRectPercentX: 0,
+        bigRectPercentY: 0,
+        ratioX: 0,
+        ratioY: 0,
+    });
+    let zoomSize = $state({ width: 100, height: 100 });
+    let zoomRatio = $state(5);
+    let zoomRectWidth = $derived(zoomSize.width / zoomRatio);
+    let zoomRectHeight = $derived(zoomSize.height / zoomRatio);
 
     const handleMouseMove = (e: MouseEvent) => {
-        const { left, top, width, height } = (
-            e.currentTarget as HTMLElement
-        ).getBoundingClientRect();
+        const target = e.target as HTMLImageElement;
+        const currentTarget = e.currentTarget as HTMLElement;
+        const {
+            left: containerX,
+            top: containerY,
+            width: containerWidth,
+            height: containerHeight,
+        } = currentTarget.getBoundingClientRect();
 
-        // Calcula a porcentagem da posição do mouse dentro da imagem
-        const x = ((e.pageX - left - window.scrollX) / width) * 100;
-        const y = ((e.pageY - top - window.scrollY) / height) * 100;
+        let imgHeight =
+            target.naturalHeight > target.naturalWidth
+                ? containerHeight
+                : target.naturalHeight / (target.naturalWidth / containerWidth);
+        let imgWidth =
+            target.naturalWidth > target.naturalHeight
+                ? containerWidth
+                : target.naturalWidth /
+                  (target.naturalHeight / containerHeight);
 
-        zoomPos = { x, y };
+        let imgOffsetX = (containerWidth - imgWidth) / 2;
+        let imgOffsetY = (containerHeight - imgHeight) / 2;
+
+        const mouseXRaw = e.clientX - containerX;
+        const mouseYRaw = e.clientY - containerY;
+
+        const isInsideImage =
+            mouseXRaw >= imgOffsetX &&
+            mouseXRaw <= imgOffsetX + imgWidth &&
+            mouseYRaw >= imgOffsetY &&
+            mouseYRaw <= imgOffsetY + imgHeight;
+
+        if (!isInsideImage) {
+            showZoom = false;
+            return;
+        }
+
+        let mouseX = e.clientX - (containerX + imgOffsetX);
+        let mouseY = e.clientY - (containerY + imgOffsetY);
+
+        let x = mouseX - zoomRectWidth / 2;
+        let y = mouseY - zoomRectHeight / 2;
+
+        x = Math.max(0, Math.min(x, imgWidth - zoomRectWidth));
+        y = Math.max(0, Math.min(y, imgHeight - zoomRectHeight));
+
+        let littleRectPercentX = ((x + imgOffsetX) / containerWidth) * 100;
+        let littleRectPercentY = ((y + imgOffsetY) / containerHeight) * 100;
+        let bigRectPercentX = (x / (imgWidth - zoomRectWidth)) * 100;
+        let bigRectPercentY = (y / (imgHeight - zoomRectHeight)) * 100;
+
+        let ratioX = (imgWidth / zoomRectWidth) * 100;
+        let ratioY = (imgHeight / zoomRectHeight) * 100;
+
+        zoomInfo = {
+            littleRectPercentX,
+            littleRectPercentY,
+            bigRectPercentX,
+            bigRectPercentY,
+            ratioX,
+            ratioY,
+        };
         showZoom = true;
     };
 
@@ -67,6 +130,13 @@
             return;
         }
 
+        zoomSize = {
+            width: target.getBoundingClientRect().width,
+            height: target.getBoundingClientRect().height,
+        };
+
+        console.log("portal width: ", target.getBoundingClientRect().width);
+        console.log("portal height: ", target.getBoundingClientRect().height);
         target.appendChild(node);
 
         return {
@@ -129,27 +199,27 @@
                         "touch-pan-y",
                         "touch-pinch-zoom",
                         "max-w-100",
-                        "-ml-2.5",
+                        "gap-2.5",
                     )}
                 >
                     {#each images as image}
                         <div
                             role="img"
-                            onmousemove={handleMouseMove}
-                            onmouseleave={() => (showZoom = false)}
                             class={cn(
                                 "min-w-0",
                                 "grow-0",
                                 "shrink-0",
                                 "basis-full",
-                                "pl-2.5",
                                 "relative",
                                 "overflow-hidden",
-                                "cursor-crosshair",
+                                "cursor-pointer",
+                                { "cursor-crosshair": showZoom },
                                 "rounded-xl",
                             )}
                         >
                             <img
+                                onmousemove={handleMouseMove}
+                                onmouseleave={() => (showZoom = false)}
                                 src={image.imgSrc}
                                 alt={image.imgAlt}
                                 class={cn(
@@ -168,11 +238,12 @@
                                         "border-gray-400",
                                         "bg-white/20",
                                         "shadow-lg",
-                                        "size-33.5",
-                                        "-translate-1/2",
+                                        // "-translate-1/2",
                                     )}
-                                    style:top="{zoomPos.y}%"
-                                    style:left="{zoomPos.x}%"
+                                    style:top="{zoomInfo.littleRectPercentY}%"
+                                    style:left="{zoomInfo.littleRectPercentX}%"
+                                    style:width="{zoomRectWidth}px"
+                                    style:height="{zoomRectHeight}px"
                                 ></div>
                             {/if}
                         </div>
@@ -222,10 +293,10 @@
     {#if showZoom}
         <div
             use:portal={zoomTarget}
-            class="z-50 border-2 border-gray-100 shadow-2xl rounded-xl bg-white overflow-hidden absolute inset-0 aspect-square"
+            class="z-50 border-2 border-gray-100 shadow-2xl rounded-xl bg-white overflow-hidden absolute inset-0"
             style:background-image="url({images[selectedIndex].imgSrc})"
-            style:background-size="300%"
-            style:background-position="{zoomPos.x}% {zoomPos.y}%"
+            style:background-size="{zoomInfo.ratioX}% {zoomInfo.ratioY}%"
+            style:background-position="{zoomInfo.bigRectPercentX}% {zoomInfo.bigRectPercentY}%"
             style:background-repeat="no-repeat"
         ></div>
     {/if}
