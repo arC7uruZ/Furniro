@@ -53,9 +53,14 @@
             {routeName}
         </h1>
         <nav>
-            <ol class="flex items-center">
+            <ol class={cn("flex", "items-center")}>
                 <li
-                    class="font-primary text-body-md font-semibold text-content-heading"
+                    class={cn(
+                        "font-primary",
+                        "text-base",
+                        "font-semibold",
+                        "text-content-heading",
+                    )}
                 >
                     <a href="/">Home</a>
                 </li>
@@ -65,12 +70,12 @@
                             "before:content-['>']",
                             "before:mx-2",
                             "font-primary",
-                            "text-body-md",
+                            "text-base",
                             "font-regular",
                             "text-content-heading",
                         )}
                     >
-                        <a href={bread.href} class="cursor-pointer">
+                        <a href={bread.href} class={cn("cursor-pointer")}>
                             {bread.label}
                         </a>
                     </li>

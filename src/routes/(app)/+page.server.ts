@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         .limit(3);
 
 
-        console.log(categoryProducts);
+        // console.log(categoryProducts);
 
     return {
         products,

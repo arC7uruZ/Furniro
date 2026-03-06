@@ -10,7 +10,7 @@ export const POST = async (event) => {
     // locals.user = null;
 
     // 3. Redirecione para a home ou login
-    // console.log("xibiu")
+    // console.log("teste")
 
 
     if (event.locals.session !== null && event.locals.user !== null) {

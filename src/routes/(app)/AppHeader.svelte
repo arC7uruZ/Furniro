@@ -326,7 +326,7 @@
                                     <button
                                         onclick={async () => {
                                             const response = await fetch(
-                                                "logout",
+                                                "/logout",
                                                 {
                                                     method: "POST",
                                                 },
@@ -401,7 +401,7 @@
                 </Tooltip.Root>
             </Tooltip.Provider>
         </AnchorButton>
-        <AnchorButton>
+        <AnchorButton href="/cart">
             <Tooltip.Provider>
                 <Tooltip.Root delayDuration={200}>
                     <Tooltip.Trigger

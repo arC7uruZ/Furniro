@@ -1,7 +1,7 @@
 import { setSessionAs2FAVerified } from "$lib/server/session";
 import { updateUserTOTPKey } from "$lib/server/user";
 import { decodeBase64, encodeBase64 } from "@oslojs/encoding";
-import { createTOTPKeyURI, verifyTOTP, verifyTOTPWithGracePeriod } from "@oslojs/otp";
+import { createTOTPKeyURI, verifyTOTPWithGracePeriod } from "@oslojs/otp";
 import { fail, redirect, type Actions, type RequestEvent } from "@sveltejs/kit";
 import { renderSVG } from "uqr";
 
@@ -89,7 +89,7 @@ export const actions = {
             });
         }
 
-        if (!verifyTOTPWithGracePeriod(key, 30, 6, code, 30)) {
+        if (!verifyTOTPWithGracePeriod(key, 30, 6, code, 90)) {
             return fail(400, {
                 message: "Invalid code"
             });

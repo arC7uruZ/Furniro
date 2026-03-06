@@ -141,7 +141,7 @@
 
         (async () => {
             const res = await fetch(
-                `/products?page=${page}&pageSize=${pageSize}&${queryParams.toString()}${
+                `/api/products?page=${page}&pageSize=${pageSize}&${queryParams.toString()}${
                     sort !== "default" ? `&sort=${sort}` : ""
                 }`,
                 { signal: controller.signal },

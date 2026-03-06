@@ -4,7 +4,7 @@
 	import { getEmblaContext } from "./context.js";
 	import { cn } from "$lib/utils.js";
 	import { type Props } from "$lib/components/ui/button/index.js";
-    import { Button } from "bits-ui";
+	import { Button } from "bits-ui";
 
 	let {
 		ref = $bindable(null),
@@ -13,6 +13,8 @@
 		// size = "icon",
 		...restProps
 	}: WithoutChildren<Props> = $props();
+
+	const buttonProps = restProps as Record<string, unknown>;
 
     // let {
     //     ref = $bindable(null),
@@ -27,7 +29,8 @@
 	aria-disabled={!emblaCtx.canScrollNext}
 	onclick={emblaCtx.scrollNext}
 	onkeydown={emblaCtx.handleKeyDown}
-    {...restProps}
+    class={className}
+	{...buttonProps}
 >
 	<ArrowRightIcon class="size-5 text-content-on-action-neutral-normal group-hover:text-content-on-action-neutral-hover" />
 	<span class="sr-only">Next slide</span>

@@ -1,9 +1,9 @@
+import { verifyEmailInput } from "$lib/server/email";
+import { verifyPasswordHash } from "$lib/server/password";
+import { createSession, generateSessionToken, setSessionTokenCookie, type SessionFlags } from "$lib/server/session";
+import { getUserFromEmail, getUserPasswordHash } from "$lib/server/user";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoadEvent } from "./$types";
-import { verifyEmailInput } from "$lib/server/email";
-import { getUserFromEmail, getUserPasswordHash } from "$lib/server/user";
-import { verifyPasswordHash } from "$lib/server/password";
-import { createSession, deleteSession, deleteSessionTokenCookie, generateSessionToken, setSessionTokenCookie, type SessionFlags } from "$lib/server/session";
 
 export const load = async (event: PageServerLoadEvent) => {
     if (event.locals.session !== null && event.locals.user !== null) {
@@ -82,10 +82,10 @@ export const actions = {
             redirect(302, "/verify-email");
         }
 
-        // if (!user.registered2FA) {
-        //     redirect(302, "/2fa/setup");
-        // }
-        // redirect(302, "/2fa");
-        redirect(303, "/");
+        if (!user.registered2FA) {
+            redirect(302, "/2fa/setup");
+        }
+        const redirectTo = event.url.searchParams.get('redirect') || '/';
+        redirect(302, `/2fa?redirectTo=${redirectTo}`);
     }
 } satisfies Actions

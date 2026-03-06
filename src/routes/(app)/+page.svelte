@@ -1,10 +1,10 @@
 <script lang="ts">
+    import ProductGrid from "$lib/components/ProductGrid.svelte";
     import * as Carousel from "$lib/components/ui/carousel";
     import type { CarouselAPI } from "$lib/components/ui/carousel/context.js";
     import { Button } from "bits-ui";
-    import type { PageProps } from "./$types";
-    import ProductCard from "$lib/components/ProductCard.svelte";
     import { cn } from "tailwind-variants";
+    import type { PageProps } from "./$types";
 
     let { data }: PageProps = $props();
 
@@ -24,7 +24,7 @@
         // console.log("current:", current);
     });
 
-    const products = $derived([...data.products]);
+    const products = $state([...data.products]);
     let loading = $state(false);
     let hasMore = $state(true);
 
@@ -34,7 +34,7 @@
         loading = true;
 
         const res = await fetch(
-            `/products?page=${Math.floor(products.length / 8) + 1}`,
+            `/api/products?page=${Math.floor(products.length / 8) + 1}`,
         );
         const result = await res.json();
 
@@ -75,26 +75,56 @@
             "shadow-lg",
         )}
     >
-        <div class="flex flex-col items-start max-w-135 gap-4">
+        <div
+            class={cn("flex", "flex-col", "items-start", "max-w-135", "gap-4")}
+        >
             <p
-                class="font-primary font-semibold text-heading-h5/8 text-content-heading"
+                class={cn(
+                    "font-primary",
+                    "font-semibold",
+                    "text-2xl/8",
+                    "text-content-heading",
+                )}
             >
                 New Arrival
             </p>
             <p
-                class="font-primary font-bold text-heading-h1/16 text-content-primary"
+                class={cn(
+                    "font-primary",
+                    "font-bold",
+                    "text-6xl/16",
+                    "text-content-primary",
+                )}
             >
                 Discover Our New Collection
             </p>
             <p
-                class="font-primary font-regular text-body-lg/6 text-content-body"
+                class={cn(
+                    "font-primary",
+                    "font-regular",
+                    "text-2xl/6",
+                    "text-content-body",
+                )}
             >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
                 tellus, luctus nec ullamcorper mattis.
             </p>
         </div>
         <Button.Root
-            class="bg-surface-action-primary-normal hover:bg-surface-action-primary-hover disabled:bg-surface-action-disabled text-content-on-action-primary-normal hover:text-content-on-action-primary-hover disabled:text-content-on-action-disabled py-lg px-4xl font-primary font-semibold text-heading-h4 cursor-pointer"
+            class={cn(
+                "bg-surface-action-primary-normal",
+                "text-content-on-action-primary-normal",
+                "hover:bg-surface-action-primary-hover",
+                "hover:text-content-on-action-primary-hover",
+                "disabled:bg-surface-action-disabled",
+                "disabled:text-content-on-action-disabled",
+                "py-lg",
+                "px-4xl",
+                "font-primary",
+                "font-semibold",
+                "text-3xl",
+                "cursor-pointer",
+            )}
         >
             BUY NOW
         </Button.Root>
@@ -104,20 +134,32 @@
 <section>
     <nav
         aria-labelledby="browse-the-range-title"
-        class="flex flex-col items-center gap-xl py-xl"
+        class={cn("flex", "flex-col", "items-center", "gap-xl", "py-xl")}
     >
-        <div class="flex flex-col items-center">
+        <div class={cn("flex", "flex-col", "items-center")}>
             <h2
                 id="browse-the-range-title"
-                class="font-primary font-bold text-heading-h4 text-content-heading"
+                class={cn(
+                    "font-primary",
+                    "font-bold",
+                    "text-3xl",
+                    "text-content-heading",
+                )}
             >
                 Browse The Range
             </h2>
-            <p class="font-primary font-normal text-xl text-content-body">
+            <p
+                class={cn(
+                    "font-primary",
+                    "font-normal",
+                    "text-xl",
+                    "text-content-body",
+                )}
+            >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
         </div>
-        <div class="flex gap-5">
+        <div class={cn("flex", "gap-5")}>
             {#snippet CategoryCard(
                 src: string,
                 categoryId: number,
@@ -125,15 +167,42 @@
             )}
                 <a
                     href={`/shop?category=${categoryId}`}
-                    class="flex flex-col items-center focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-stroke-focus hover:scale-105 transform transition-transform duration-300 ease-out rounded-xl"
+                    class={cn(
+                        "flex",
+                        "flex-col",
+                        "items-center",
+                        "focus-visible:outline-offset-2",
+                        "focus-visible:outline-2",
+                        "focus-visible:outline-stroke-focus",
+                        "hover:scale-105",
+                        "transform",
+                        "transition-transform",
+                        "duration-300",
+                        "ease-out",
+                        "rounded-xl",
+                    )}
                 >
                     <img
                         {src}
                         alt=""
-                        class="w-95.25 h-120.25 object-cover object-left rounded-xl"
+                        class={cn(
+                            "w-95.25",
+                            "h-120.25",
+                            "object-cover",
+                            "object-left",
+                            "rounded-xl",
+                        )}
                     />
                     <span
-                        class="flex items-center justify-center p-sm font-primary font-semibold text-2xl"
+                        class={cn(
+                            "flex",
+                            "items-center",
+                            "justify-center",
+                            "p-sm",
+                            "font-primary",
+                            "font-semibold",
+                            "text-2xl",
+                        )}
                     >
                         {caption}
                     </span>
@@ -152,43 +221,74 @@
 
 <section
     aria-labelledby="our-products-title"
-    class="flex flex-col gap-8 items-center"
+    class={cn("flex", "flex-col", "gap-8", "items-center")}
 >
     <h2
         id="our-products-title"
-        class="font-primary font-bold text-heading-h3 text-content-heading"
+        class={cn(
+            "font-primary",
+            "font-bold",
+            "text-4xl",
+            "text-content-heading",
+        )}
     >
         Our Products
     </h2>
-    <ul class="grid grid-cols-4 gap-8 grid-rows-2">
-        {#each products as product}
-            <li>
-                <ProductCard {...product} showOutlier />
-            </li>
-        {/each}
-    </ul>
-    <Button.Root
-        class="flex justify-center items-center cursor-pointer px-3xl py-sm border font-primary font-semibold text-body-lg hover:bg-surface-action-neutral-hover disabled:bg-surface-action-disabled text-content-on-action-secondary-normal hover:text-content-on-action-secondary-hover disabled:text-content-on-action-disabled border-stroke-action-normal hover:border-stroke-action-hover disabled:border-stroke-action-disabled"
-        onclick={showMore}
-        disabled={loading}
-    >
-        {loading ? "Loading..." : "Show More"}
-    </Button.Root>
+    <ProductGrid {products} {showMore} {loading} showOutlier cols="4" rows="2" />
 </section>
 
 <section
-    class="flex items-stretch justify-between pl-24 py-12 gap-10 max-w-360 bg-surface-tertiary m-10"
+    class={cn(
+        "flex",
+        "items-stretch",
+        "justify-between",
+        "pl-24",
+        "py-12",
+        "gap-10",
+        "max-w-360",
+        "bg-surface-tertiary",
+        "m-10",
+    )}
 >
-    <div class="flex flex-col gap-10 max-w-105 justify-center items-start">
-        <h2 class="font-primary font-bold text-heading-h3 leading-12">
+    <div
+        class={cn(
+            "flex",
+            "flex-col",
+            "gap-10",
+            "max-w-105",
+            "justify-center",
+            "items-start",
+        )}
+    >
+        <h2 class={cn("font-primary", "font-bold", "text-4xl", "leading-12")}>
             50+ Beautiful rooms inspiration
         </h2>
-        <p class="font-primary font-medium text-base text-gray-2">
+        <p
+            class={cn(
+                "font-primary",
+                "font-medium",
+                "text-base",
+                "text-gray-2",
+            )}
+        >
             Our designer already made a lot of beautiful prototipe of rooms that
             inspire you
         </p>
         <Button.Root
-            class="bg-surface-action-primary-normal hover:bg-surface-action-primary-hover disabled:bg-surface-action-disabled text-content-on-action-primary-normal hover:text-content-on-action-primary-hover disabled:text-content-on-action-disabled py-4 px-12 font-primary font-semibold text-heading-h6 cursor-pointer"
+            class={cn(
+                "bg-surface-action-primary-normal",
+                "hover:bg-surface-action-primary-hover",
+                "disabled:bg-surface-action-disabled",
+                "text-content-on-action-primary-normal",
+                "hover:text-content-on-action-primary-hover",
+                "disabled:text-content-on-action-disabled",
+                "py-4",
+                "px-12",
+                "font-primary",
+                "font-semibold",
+                "text-xl",
+                "cursor-pointer",
+            )}
         >
             Explore More
         </Button.Root>
@@ -196,32 +296,78 @@
     <Carousel.Root
         setApi={(emblaApi) => (api = emblaApi)}
         opts={{ align: "start", loop: true }}
-        class="w-200"
+        class={cn("w-200")}
     >
-        <Carousel.Content class="flex items-start min-h-145.5 w-full">
+        <Carousel.Content
+            class={cn("flex", "items-start", "min-h-145.5", "w-full")}
+        >
             {#each data.carouselProducts as product, i (i)}
                 <Carousel.Item
-                    class="relative flex items-center justify-center basis-6/14 mx-2"
+                    class={cn(
+                        "relative",
+                        "flex",
+                        "items-center",
+                        "justify-center",
+                        "basis-6/14",
+                        "mx-2",
+                    )}
                 >
                     <img
                         src={product.productImg}
                         alt={product.productImgAlt}
-                        class="object-cover object-top {current == i
-                            ? 'h-145.5'
-                            : 'h-100'} w-full transition-all duration-400 ease-out delay-200"
+                        class={cn(
+                            "object-cover",
+                            "object-top",
+                            {
+                                "h-145.5": current === i,
+                                "h-100": current !== i,
+                            },
+                            "w-full",
+                            "transition-all",
+                            "duration-400",
+                            "ease-out",
+                            "delay-200",
+                        )}
                     />
                     <div
-                        class="flex items-end absolute bottom-4 left-4 {current ===
-                        i
-                            ? 'opacity-100'
-                            : 'opacity-0'} transition-opacity duration-300 ease-out delay-400"
+                        class={cn(
+                            "flex",
+                            "items-end",
+                            "absolute",
+                            "bottom-4",
+                            "left-4",
+
+                            {
+                                "opacity-100": current === i,
+                                "opacity-0": current !== i,
+                            },
+                            "transition-opacity",
+                            "duration-300",
+                            "ease-out",
+                            "delay-400",
+                        )}
                     >
                         <a
                             href="/"
-                            class="flex flex-col justify-center items-center p-8 bg-white/72"
+                            class={cn(
+                                "flex",
+                                "flex-col",
+                                "justify-center",
+                                "items-center",
+                                "p-8",
+                                "bg-white/72",
+                            )}
                         >
                             <p
-                                class="flex gap-2 items-center text-gray-2 font-primary font-medium text-base"
+                                class={cn(
+                                    "flex",
+                                    "gap-2",
+                                    "items-center",
+                                    "text-gray-2",
+                                    "font-primary",
+                                    "font-medium",
+                                    "text-base",
+                                )}
                             >
                                 0{i + 1}
                                 <span>
@@ -238,7 +384,13 @@
                                 {product.SetName}
                             </p>
 
-                            <p class="font-primary font-semibold text-[28px]">
+                            <p
+                                class={cn(
+                                    "font-primary",
+                                    "font-semibold",
+                                    "text-3xl",
+                                )}
+                            >
                                 {#if product.InnerPiece}
                                     {"Inner Piece"}
                                 {:else}
@@ -247,7 +399,7 @@
                             </p>
                         </a>
                         <a href="/" aria-label="next-room">
-                            <div class="p-4 bg-primary">
+                            <div class={cn("p-4", "bg-primary")}>
                                 <svg
                                     width="20"
                                     height="14"
@@ -276,27 +428,63 @@
         </div> -->
         <Carousel.DotGroup />
         <Carousel.Next
-            class="flex items-center justify-center absolute size-10 rounded-full end-18 top-1/2 -translate-y-1/2 group bg-surface-action-neutral-normal hover:bg-surface-action-neutral-hover shadow-2xl cursor-pointer"
+            class={cn(
+                "flex",
+                "items-center",
+                "justify-center",
+                "absolute",
+                "size-10",
+                "rounded-full",
+                "end-18",
+                "top-1/2",
+                "-translate-y-1/2",
+                "group",
+                "bg-surface-action-neutral-normal",
+                "hover:bg-surface-action-neutral-hover",
+                "shadow-2xl",
+                "cursor-pointer",
+            )}
         />
     </Carousel.Root>
 </section>
 
-<!-- <section class="flex overflow-clip w-full">
-    <img src="/Group.png" alt="xibiuzinho" width="1784" height="735" class="w-446 h-183.75 object-contain">
-</section> -->
-
 <section
-    class="flex flex-col items-center relative w-full max-w-360 h-183.75 overflow-hidden"
+    class={cn(
+        "flex",
+        "flex-col",
+        "items-center",
+        "relative",
+        "w-full",
+        "max-w-360",
+        "h-183.75",
+        "overflow-hidden",
+    )}
 >
-    <div class="flex flex-col items-center absolute">
-        <p class="font-primary text-body-md text-content-subtle font-semibold">
+    <div class={cn("flex", "flex-col", "items-center", "absolute")}>
+        <p
+            class={cn(
+                "font-primary",
+                "text-base",
+                "text-content-subtle",
+                "font-semibold",
+            )}
+        >
             Share your setup with
         </p>
         <h3
-            class="font-primary text-heading-h4 text-content-heading font-semibold"
+            class={cn(
+                "font-primary",
+                "text-3xl",
+                "text-content-heading",
+                "font-semibold",
+            )}
         >
             #FurniroFurniture
         </h3>
     </div>
-    <img src="/Group.png" alt="xibiuzinho" class="w-full h-full object-cover" />
+    <img
+        src="/Group.png"
+        alt="PostImages"
+        class={cn("w-full", "h-full", "object-cover")}
+    />
 </section>

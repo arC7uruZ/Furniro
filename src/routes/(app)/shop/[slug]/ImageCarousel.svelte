@@ -149,8 +149,8 @@
     };
 </script>
 
-<div class={cn("flex", "justify-start", "w-full")}>
-    <div class={cn("flex", "gap-2.5", "h-fit")}>
+<div class={cn("flex", "min-w-fit")}>
+    <div class={cn("flex", "gap-8")}>
         <div
             class={cn("overflow-hidden")}
             onemblaInit={onInitThumb}
@@ -215,6 +215,7 @@
                                 "cursor-pointer",
                                 { "cursor-crosshair": showZoom },
                                 "rounded-xl",
+                                "bg-surface-tertiary",
                             )}
                         >
                             <img
@@ -293,11 +294,21 @@
     {#if showZoom}
         <div
             use:portal={zoomTarget}
-            class="z-50 border-2 border-gray-100 shadow-2xl rounded-xl bg-white overflow-hidden absolute inset-0"
+            class={cn(
+                "z-50",
+                "border-2",
+                "border-gray-100",
+                "shadow-2xl",
+                "rounded-xl",
+                "bg-white",
+                "overflow-hidden",
+                "absolute",
+                "inset-0",
+                "bg-no-repeat",
+            )}
             style:background-image="url({images[selectedIndex].imgSrc})"
             style:background-size="{zoomInfo.ratioX}% {zoomInfo.ratioY}%"
             style:background-position="{zoomInfo.bigRectPercentX}% {zoomInfo.bigRectPercentY}%"
-            style:background-repeat="no-repeat"
         ></div>
     {/if}
 </div>

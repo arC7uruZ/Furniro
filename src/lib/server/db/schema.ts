@@ -48,35 +48,35 @@ export const ProductWoodTable = sqliteTable("product_wood", {
     productId: int().notNull().references(() => ProductTable.id),
     woodId: int().notNull().references(() => WoodTable.id),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.woodId]}),
+    primaryKey({ columns: [table.productId, table.woodId] }),
 ])
 
 export const ProductUpholsteryTable = sqliteTable("product_upholstery", {
     productId: int().notNull().references(() => ProductTable.id),
     upholsteryId: int().notNull().references(() => UpholsteryTable.id),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.upholsteryId]}),
+    primaryKey({ columns: [table.productId, table.upholsteryId] }),
 ])
 
 export const ProductTagTable = sqliteTable("product_tag", {
     productId: int().notNull().references(() => ProductTable.id),
     tagId: int().notNull().references(() => TagTable.id),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.tagId]}),
+    primaryKey({ columns: [table.productId, table.tagId] }),
 ])
 
 export const ProductCategoryTable = sqliteTable("product_category", {
     productId: int().notNull().references(() => ProductTable.id),
     categoryId: int().notNull().references(() => CategoryTable.id),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.categoryId]}),
+    primaryKey({ columns: [table.productId, table.categoryId] }),
 ])
 
 export const ProductSetTable = sqliteTable("product_set", {
     productId: int().notNull().references(() => ProductTable.id),
     setId: int().notNull().references(() => SetTable.id),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.setId]}),
+    primaryKey({ columns: [table.productId, table.setId] }),
 ])
 
 export const ImageTable = sqliteTable("image", {
@@ -105,7 +105,7 @@ export const WarrantyTable = sqliteTable("warranty", {
     domesticPeriod: int().notNull(),
     covered: text().notNull(),
     notCovered: text().notNull(),
-})
+});
 
 export const StockTable = sqliteTable("stock", {
     productId: int().notNull().references(() => ProductTable.id),
@@ -119,9 +119,21 @@ export const StockTable = sqliteTable("stock", {
     sku: text().notNull(),
     quantity: int().notNull(),
 }, (table) => [
-    primaryKey({ columns: [table.productId, table.colorId, table.sizeId]}),
+    primaryKey({ columns: [table.productId, table.colorId, table.sizeId] }),
     uniqueIndex("sku_idx").on(table.sku),
-])
+]);
+
+export const CartItemTable = sqliteTable("cart_item", {
+    userId: int().notNull().references(() => UserTable.id),
+    productId: int().notNull().references(() => ProductTable.id),
+    sizeId: int().notNull().references(() => SizeTable.id),
+    colorId: int().notNull().references(() => ColorTable.id),
+    quantity: int().notNull(),
+    createdAt: int({ mode: "timestamp_ms" }).notNull(),
+    updatedAt: int({ mode: "timestamp_ms" }).notNull(),
+}, (table) => [
+    primaryKey({ columns: [table.userId, table.productId, table.sizeId, table.colorId] }),
+]);
 
 export const RoleTable = sqliteTable("role", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -133,7 +145,7 @@ export const UserTable = sqliteTable("user", {
     username: text().notNull().unique(),
     email: text().notNull().unique(),
     passwordHash: text().notNull(),
-    emailVerified: int({mode: "boolean"}).notNull().default(false),
+    emailVerified: int({ mode: "boolean" }).notNull().default(false),
     totpKey: blob().$type<Uint8Array>(),
     recoveryCode: blob().$type<Uint8Array>().notNull(),
     roleId: int().notNull().references(() => RoleTable.id),

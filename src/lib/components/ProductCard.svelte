@@ -102,6 +102,7 @@
                     "font-medium",
                     "text-base",
                     "text-content-subtle",
+                    "line-clamp-2",
                 )}
             >
                 {description}
