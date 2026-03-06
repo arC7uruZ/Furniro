@@ -184,7 +184,9 @@
                     >
                         Total
                     </h2>
-                    <div class={cn("flex", "flex-col", "items-center", "gap-2")}>
+                    <div
+                        class={cn("flex", "flex-col", "items-center", "gap-2")}
+                    >
                         <p
                             class={cn(
                                 "flex",
@@ -221,7 +223,8 @@
                                 "font-semibold",
                             )}
                         >
-                            total a pagar <span class={cn("text-content-primary", "text-base")}
+                            total a pagar <span
+                                class={cn("text-content-primary", "text-base")}
                                 >{formatPrice(
                                     cartItems
                                         .map(
@@ -233,6 +236,22 @@
                             >
                         </p>
                     </div>
+                    <button
+                        class={cn(
+                            "px-4",
+                            "py-2",
+                            "rounded-md",
+                            "border",
+                            "border-gray-700",
+                            "bg-surface-action-secondary-normal",
+                            "hover:bg-surface-action-secondary-hover",
+                            "cursor-pointer",
+                            "text-content-heading",
+                            "text-base",
+                            "font-primary",
+                            "font-semibold"
+                        )}>Ir para pagamento</button
+                    >
                 </div>
             </div>
         {:else}
