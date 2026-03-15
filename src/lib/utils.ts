@@ -18,3 +18,10 @@ export const formatPrice = (price: number) => {
         currency: "BRL",
     }).format(price);
 };
+
+
+export const intlDate = new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+});

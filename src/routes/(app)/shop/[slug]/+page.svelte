@@ -1,20 +1,47 @@
 <script lang="ts">
+    import { enhance } from "$app/forms";
     import { page } from "$app/state";
+    import ImageCarousel from "$lib/components/ImageCarousel.svelte";
     import ProductGrid from "$lib/components/ProductGrid.svelte";
+    import StarRating from "$lib/components/StarRating.svelte";
     import * as Breadcrumb from "$lib/components/ui/breadcrumb";
-    import { formatPrice } from "$lib/utils";
-    import { Minus, Plus } from "@lucide/svelte";
+    import { formatPrice, intlDate } from "$lib/utils";
+    import { Minus, Plus, Star } from "@lucide/svelte";
     import { Separator } from "bits-ui";
     import { cn } from "tailwind-variants";
     import type { PageProps } from "./$types";
-    import ImageCarousel from "./ImageCarousel.svelte";
-    import { enhance } from "$app/forms";
 
     let { params, data }: PageProps = $props();
 
     const product = $derived(data.product);
+    let reviewsSize = $state(5);
+    $effect(() => {
+        product.id;
+        reviewsSize = 5;
+    });
+    let rateMedia = $state(
+        (
+            // svelte-ignore state_referenced_locally
+                        product.reviews
+                .map((review) => review.rate)
+                .reduce((acc, item) => acc + item, 0) / product.reviews.length
+        ).toFixed(2),
+    );
+    $effect(() => {
+        product.id;
+        rateMedia = (
+            product.reviews
+                .map((review) => review.rate)
+                .reduce((acc, item) => acc + item, 0) / product.reviews.length
+        ).toFixed(2);
+    });
     const contentParagraph = $derived(product.description.split("\n"));
-    const relatedProducts = $state([...data.relatedProducts]);
+    // svelte-ignore state_referenced_locally
+        let relatedProducts = $state([...data.relatedProducts]);
+    $effect(() => {
+        product.id;
+        relatedProducts = [...data.relatedProducts];
+    });
     let loading = $state(false);
     let hasMore = $state(true);
 
@@ -26,11 +53,9 @@
         loading = true;
 
         const res = await fetch(
-            `/api/products?page=${Math.floor(relatedProducts.length / 4) + 1}&pageSize=4`,
+            `/api/products?page=${Math.floor(relatedProducts.length / 4) + 1}&pageSize=4&category=${product.category}`,
         );
         const result = await res.json();
-
-        console.log(relatedProducts);
 
         if (result.products?.length === 0) {
             hasMore = false;
@@ -168,6 +193,14 @@
                         </p>
                     {/if}
                 </div>
+                <div class={cn("flex", "items-center", "gap-4")}>
+                    <StarRating rating={Number(rateMedia)} size={25} />
+                    <Separator.Root
+                        orientation="vertical"
+                        class={cn("w-0.5", "h-5", "bg-gray-500")}
+                    />
+                    <p>{product.reviews.length} customers review</p>
+                </div>
             </div>
             <p
                 class={cn(
@@ -183,8 +216,8 @@
                 method="POST"
                 use:enhance={() => {
                     return async ({ update }) => {
-                        await update({ reset: false });
                         addedToCart = true;
+                        await update({ reset: false });
                         setTimeout(() => (addedToCart = false), 1000);
                     };
                 }}
@@ -489,5 +522,85 @@
             cols="4"
             rows="1"
         />
+    </section>
+    <section class={cn("flex", "flex-col", "gap-8")}>
+        <h2
+            class={cn(
+                "font-primary",
+                "text-3xl",
+                "text-content-heading",
+                "font-semibold",
+            )}
+        >
+            reviews
+        </h2>
+        <div class={cn("flex", "flex-col", "gap-8", "max-w-150")}>
+            {#each product.reviews
+                .sort((a, b) => b.rate - a.rate)
+                .filter((item) => product.reviews.indexOf(item) < reviewsSize) as review}
+                <div class={cn("flex", "flex-col", "gap-2")}>
+                    <div class={cn("flex", "justify-between")}>
+                        <div class={cn("flex")}>
+                            {#each Array(review.rate)}
+                                <Star
+                                    fill="var(--color-yellow-500)"
+                                    stroke="var(--color-amber-500)"
+                                    strokeWidth="0"
+                                />
+                            {/each}
+                            {#each Array(5 - review.rate)}
+                                <Star
+                                    fill="var(--color-gray-200)"
+                                    strokeWidth="0"
+                                />
+                            {/each}
+                        </div>
+                        <p
+                            class={cn(
+                                "font-primary",
+                                "text-sm",
+                                "text-content-subtle",
+                            )}
+                        >
+                            {`${intlDate.format(new Date(review.updatedAt))}`}
+                        </p>
+                    </div>
+                    <p
+                        class={cn(
+                            "font-primary",
+                            "text-base",
+                            review.comment
+                                ? "text-content-body"
+                                : "text-content-subtle",
+                            "font-regular",
+                        )}
+                    >
+                        {#if review.comment}
+                            {review.comment}
+                        {:else}
+                            O usuario não deixou nenhum comentário
+                        {/if}
+                    </p>
+                </div>
+            {/each}
+            {#if reviewsSize < product.reviews.length}
+                <button
+                    onclick={() => (reviewsSize += 5)}
+                    class={cn(
+                        "px-4",
+                        "py-2",
+                        "rounded-md",
+                        "bg-surface-action-primary-normal",
+                        "hover:bg-surface-action-primary-hover",
+                        "text-content-on-action-primary-normal",
+                        "hover:text-content-on-action-primary-hover",
+                        "font-primary",
+                        "text-base",
+                        "font-semibold",
+                        "cursor-pointer",
+                    )}>Carregar mais reviews</button
+                >
+            {/if}
+        </div>
     </section>
 </main>

@@ -7,9 +7,11 @@ import {
     ProductCategoryTable,
     ProductTable,
     ProductTagTable,
+    ReviewTable,
     SizeTable,
     StockTable,
     TagTable,
+    UserTable,
 } from "$lib/server/db/schema";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, eq } from "drizzle-orm";
@@ -38,6 +40,11 @@ export const load: PageServerLoad = async ({ params }) => {
         colorId: ColorTable.id,
         colorTitle: ColorTable.title,
         colorRgb: ColorTable.rgb,
+        reviewUser: UserTable.username,
+        reviewRate: ReviewTable.rate,
+        reviewComment: ReviewTable.comment,
+        reviewCreatedAt: ReviewTable.createdAt,
+        reviewUpdatedAt: ReviewTable.updatedAt,
     }).from(ProductTable)
         .innerJoin(ImageTable, eq(ProductTable.id, ImageTable.productId))
         .innerJoin(ProductCategoryTable, eq(ProductTable.id, ProductCategoryTable.productId))
@@ -47,6 +54,8 @@ export const load: PageServerLoad = async ({ params }) => {
         .innerJoin(StockTable, eq(StockTable.productId, ProductTable.id))
         .innerJoin(SizeTable, eq(StockTable.sizeId, SizeTable.id))
         .innerJoin(ColorTable, eq(StockTable.colorId, ColorTable.id))
+        .innerJoin(ReviewTable, eq(ReviewTable.productId, ProductTable.id))
+        .innerJoin(UserTable, eq(ReviewTable.userId, UserTable.id))
         .where(eq(ProductTable.slug, params.slug))
 
     const productsMap = new Map<number, {
@@ -76,6 +85,13 @@ export const load: PageServerLoad = async ({ params }) => {
             title: string,
             rgb: string
         }[],
+        reviews: {
+            username: string,
+            rate: number,
+            comment: string | null,
+            createdAt: number,
+            updatedAt: number,
+        }[]
     }>();
 
     for (const row of rows) {
@@ -95,6 +111,7 @@ export const load: PageServerLoad = async ({ params }) => {
                 images: [],
                 sizes: [],
                 colors: [],
+                reviews: [],
             })
         }
 
@@ -119,6 +136,18 @@ export const load: PageServerLoad = async ({ params }) => {
         if (row.tag) {
             if (!productsMap.get(row.id)!.tags.find((tag) => tag === row.tag)) {
                 productsMap.get(row.id)!.tags.push(row.tag);
+            }
+        }
+
+        if (row.reviewUser) {
+            if (!productsMap.get(row.id)!.reviews.find((review) => review.username === row.reviewUser)) {
+                productsMap.get(row.id)!.reviews.push({
+                    username: row.reviewUser,
+                    rate: row.reviewRate,
+                    comment: row.reviewComment,
+                    createdAt: row.reviewCreatedAt,
+                    updatedAt: row.reviewUpdatedAt
+                })
             }
         }
     }

@@ -25,9 +25,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         .innerJoin(ImageTable, and(eq(ImageTable.productId, ProductTable.id), eq(ImageTable.order, 0)))
         .limit(8);
 
-    let queryCount = await db.select({ count: count() }).from(ProductTable);
-
-    // console.log(`products: ${JSON.stringify(products)}`);
+    const queryCount = await db.select({ count: count() }).from(ProductTable);
 
     return {
         priceRange,

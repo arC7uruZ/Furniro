@@ -21,6 +21,7 @@
     import type { PageProps } from "./$types";
     import { SvelteMap } from "svelte/reactivity";
     import ProductCard from "$lib/components/ProductCard.svelte";
+    import PreFooter from "$lib/components/PreFooter.svelte";
 
     let { data }: PageProps = $props();
 
@@ -654,4 +655,5 @@
                 {loading ? "Loading..." : "Show More"}
             </Button.Root> -->
     </section>
+    <PreFooter/>
 </main>

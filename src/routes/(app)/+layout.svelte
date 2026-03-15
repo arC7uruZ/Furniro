@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { cn } from "$lib/utils";
+    import AppFooter from "$lib/components/AppFooter.svelte";
+    import AppHeader from "$lib/components/AppHeader.svelte";
+    import { cn } from "tailwind-variants";
     import type { LayoutProps } from "./$types";
-    import AppFooter from "./AppFooter.svelte";
-    import AppHeader from "./AppHeader.svelte";
     import "./layout.css";
 
     let { data, children }: LayoutProps = $props();
-
 </script>
 
 <svelte:head>

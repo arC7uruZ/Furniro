@@ -9,6 +9,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         title: ProductTable.title,
         description: ProductTable.shortDescription,
         price: ProductTable.price,
+        slug: ProductTable.slug,
         imgSrc: ImageTable.imgSrc,
         imgAlt: ImageTable.imgAlt,
         createdAt: ProductTable.createdAt,

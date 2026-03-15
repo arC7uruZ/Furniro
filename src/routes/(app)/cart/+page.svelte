@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { invalidate, invalidateAll } from "$app/navigation";
+    import { invalidateAll } from "$app/navigation";
     import PageHeader from "$lib/components/PageHeader.svelte";
+    import QuantityInput from "$lib/components/QuantityInput.svelte";
     import { formatPrice } from "$lib/utils";
     import { Trash2 } from "@lucide/svelte";
     import { cn } from "tailwind-variants";
     import type { PageProps } from "./$types";
-    import QuantityInput from "./QuantityInput.svelte";
+    import { fade } from "svelte/transition";
+    import PreFooter from "$lib/components/PreFooter.svelte";
 
     let { data }: PageProps = $props();
 
@@ -29,6 +31,15 @@
         colorRgb: string;
         quantity: number;
     }) {
+        cartItems.splice(
+            cartItems.findIndex(
+                (i) =>
+                    i.productId === item.productId &&
+                    i.colorId === item.colorId &&
+                    i.sizeId === item.sizeId,
+            ),
+            1,
+        );
         // console.log(item)
         await fetch("/cart", {
             method: "DELETE",
@@ -40,7 +51,7 @@
             }),
         });
 
-        await invalidateAll();
+        // await invalidateAll();
     }
 </script>
 
@@ -80,8 +91,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {#each cartItems as item}
-                            <tr>
+                        {#each cartItems as item (`${item.productId}-${item.colorId}-${item.sizeId}`)}
+                            <tr out:fade>
                                 <td class={cn("pr-4", "py-4")}>
                                     <img
                                         src={item.imgSrc}
@@ -249,7 +260,7 @@
                             "text-content-heading",
                             "text-base",
                             "font-primary",
-                            "font-semibold"
+                            "font-semibold",
                         )}>Ir para pagamento</button
                     >
                 </div>
@@ -298,5 +309,5 @@
             </div>
         {/if}
     </div>
-    <div></div>
 </section>
+<PreFooter />

@@ -24,7 +24,8 @@
         // console.log("current:", current);
     });
 
-    const products = $state([...data.products]);
+    // svelte-ignore state_referenced_locally
+        const products = $state([...data.products]);
     let loading = $state(false);
     let hasMore = $state(true);
 
@@ -234,7 +235,7 @@
     >
         Our Products
     </h2>
-    <ProductGrid {products} {showMore} {loading} showOutlier cols="4" rows="2" />
+    <ProductGrid {products} {showMore} {loading} cols="4" rows="2" />
 </section>
 
 <section

@@ -1,4 +1,5 @@
-import { blob, int, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
+import { blob, check, int, primaryKey, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const TagTable = sqliteTable("tag", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -170,8 +171,22 @@ export const TopicTable = sqliteTable("topic", {
 
 export const PostTopicTable = sqliteTable("post_topic", {
     postId: int().notNull().references(() => PostTable.id),
-    TopicId: int().notNull().references(() => TopicTable.id),
-});
+    topicId: int().notNull().references(() => TopicTable.id),
+}, (table) => [
+    primaryKey({ columns: [table.postId, table.topicId] }) 
+]);
+
+export const ReviewTable = sqliteTable("review", {
+    userId: int().notNull().references(() => UserTable.id),
+    productId: int().notNull().references(() => ProductTable.id),
+    rate: int().notNull(),
+    comment: text(),
+    createdAt: int().notNull(),
+    updatedAt: int().notNull(),
+}, (table) => [
+    primaryKey({ columns: [table.userId, table.productId] }),
+    check("rate_check", sql`${table.rate} BETWEEN 0 AND 5`),
+])
 
 export const EmailVerificationRequestTable = sqliteTable("email_verification_request", {
     id: text().notNull().primaryKey(),
