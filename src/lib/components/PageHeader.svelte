@@ -49,7 +49,7 @@
             "bg-no-repeat",
         )}
     >
-        <h1 class={cn("font-primary", "text-heading-h2", "font-semibold")}>
+        <h1 class={cn("font-primary", "text-5xl", "font-semibold")}>
             {routeName}
         </h1>
         <nav>

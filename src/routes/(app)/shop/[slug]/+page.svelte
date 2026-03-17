@@ -20,9 +20,9 @@
         reviewsSize = 5;
     });
     let rateMedia = $state(
+        // svelte-ignore state_referenced_locally
         (
-            // svelte-ignore state_referenced_locally
-                        product.reviews
+            product.reviews
                 .map((review) => review.rate)
                 .reduce((acc, item) => acc + item, 0) / product.reviews.length
         ).toFixed(2),
@@ -37,7 +37,7 @@
     });
     const contentParagraph = $derived(product.description.split("\n"));
     // svelte-ignore state_referenced_locally
-        let relatedProducts = $state([...data.relatedProducts]);
+    let relatedProducts = $state([...data.relatedProducts]);
     $effect(() => {
         product.id;
         relatedProducts = [...data.relatedProducts];

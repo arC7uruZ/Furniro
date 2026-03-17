@@ -144,6 +144,10 @@ export const RoleTable = sqliteTable("role", {
 export const UserTable = sqliteTable("user", {
     id: int().primaryKey({ autoIncrement: true }),
     username: text().notNull().unique(),
+    lastName: text(),
+    dateOfBirth: int(),
+    gender: text(),
+    profileImageUrl: text(),
     email: text().notNull().unique(),
     passwordHash: text().notNull(),
     emailVerified: int({ mode: "boolean" }).notNull().default(false),
@@ -151,6 +155,23 @@ export const UserTable = sqliteTable("user", {
     recoveryCode: blob().$type<Uint8Array>().notNull(),
     roleId: int().notNull().references(() => RoleTable.id),
 });
+
+export const PhoneTable = sqliteTable("phone", {
+    id: int().primaryKey({ autoIncrement: true }),
+    number: int().notNull(),
+    userId: int().notNull().references(() => UserTable.id),
+})
+
+export const AdressTable = sqliteTable("adress", {
+    id: int().primaryKey({ autoIncrement: true }),
+    postalCode: int().notNull(),
+    state: text().notNull(),
+    city: text().notNull(),
+    street: text().notNull(),
+    number: text().notNull(),
+    complement: text(),
+    userId: int().notNull().references(() => UserTable.id),
+})
 
 export const PostTable = sqliteTable("post", {
     id: int().primaryKey({ autoIncrement: true }),

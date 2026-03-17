@@ -70,84 +70,117 @@
         <img src="/logo.svg" alt="User" />
         Furniro
     </Button.Root>
-    <NavigationMenu.Root class={cn("absolute", "left-1/2", "-translate-x-1/2")}>
-        <NavigationMenu.List
-            class={cn(
-                "flex",
-                "justify-between",
-                "items-center",
-                "font-primary",
-                "font-medium",
-                "text-navbar",
-            )}
-        >
-            <NavigationMenu.Item>
-                <NavigationMenu.Trigger
-                    class={cn(
-                        "py-2",
-                        "px-4",
-                        "text-content-heading",
-                        "hover:text-content-action-hover",
-                        "data-active:bg-surface-action-primary-normal",
-                        "data-active:text-content-on-action-primary-normal",
-                        "cursor-pointer",
-                        "font-primary",
-                        "text-body-md/normal",
-                        "font-semibold",
-                        "relative",
-                    )}
-                >
-                    Home
-                </NavigationMenu.Trigger>
-                <NavigationMenu.Content
-                    class={cn(
-                        "absolute",
-                        "p-2",
-                        "bg-white",
-                        "shadow-xl",
-                        "rounded-md",
-                    )}
-                >
-                    <ul class={cn("grid", "list-none", "gap-1", "px-2")}>
-                        <li>
-                            <NavigationMenu.Link href="/cart">Cart</NavigationMenu.Link>
-                        </li>
-                        <Separator.Root
-                            orientation="horizontal"
+    <div class={cn("absolute", "left-1/2", "-translate-x-1/2", "z-50")}>
+        <NavigationMenu.Root class={cn("flex", "w-full", "justify-center")}>
+            <NavigationMenu.List
+                class={cn(
+                    "flex",
+                    "justify-between",
+                    "items-center",
+                    "font-primary",
+                    "font-medium",
+                    "text-navbar",
+                )}
+            >
+                <NavigationMenu.Item>
+                    <NavigationMenu.Trigger
+                        class={cn(
+                            "py-2",
+                            "px-4",
+                            "text-content-heading",
+                            "hover:text-content-action-hover",
+                            "data-active:bg-surface-action-primary-normal",
+                            "data-active:text-content-on-action-primary-normal",
+                            "cursor-pointer",
+                            "font-primary",
+                            "text-body-md/normal",
+                            "font-semibold",
+                            "relative",
+                            "flex",
+                            "items-center",
+                            "group",
+                            "gap-1",
+                        )}
+                    >
+                        Home
+                        <ChevronDown
                             class={cn(
-                                "bg-gray-300",
-                                "shrink-0",
-                                "data-[orientation=horizontal]:h-px",
-                                "data-[orientation=vertical]:h-full",
-                                "data-[orientation=horizontal]:w-full",
+                                "size-5",
+                                "group-data-[state=open]:rotate-180",
+                                "transition-transform",
+                                "duration-200",
                             )}
                         />
-                        <li>
-                            <NavigationMenu.Link>Favourites</NavigationMenu.Link
-                            >
-                        </li>
-                        <Separator.Root
-                            orientation="horizontal"
-                            class={cn(
-                                "bg-gray-300",
-                                "shrink-0",
-                                "data-[orientation=horizontal]:h-px",
-                                "data-[orientation=vertical]:h-full",
-                                "data-[orientation=horizontal]:w-full",
-                            )}
-                        />
-                        <li>
-                            <NavigationMenu.Link>Orders</NavigationMenu.Link>
-                        </li>
-                    </ul>
-                </NavigationMenu.Content>
-            </NavigationMenu.Item>
-            <!-- {@render NavItem("Home", "/")} -->
-            {@render NavItem("Shop", "/shop")}
-            {@render NavItem("About", "/about")}
-            {@render NavItem("Contact", "/contact")}
-        </NavigationMenu.List>
-    </NavigationMenu.Root>
+                    </NavigationMenu.Trigger>
+                    <NavigationMenu.Content
+                        class={cn(
+                            "absolute",
+                            "p-2",
+                            "bg-white",
+                            "shadow-xl",
+                            "rounded-md",
+                        )}
+                    >
+                        <ul class={cn("grid", "list-none", "gap-1", "px-2")}>
+                            <li>
+                                <NavigationMenu.Link href="/cart">
+                                    Cart
+                                </NavigationMenu.Link>
+                            </li>
+                            <Separator.Root
+                                orientation="horizontal"
+                                class={cn(
+                                    "bg-gray-300",
+                                    "shrink-0",
+                                    "data-[orientation=horizontal]:h-px",
+                                    "data-[orientation=vertical]:h-full",
+                                    "data-[orientation=horizontal]:w-full",
+                                )}
+                            />
+                            <li>
+                                <NavigationMenu.Link href="/blog">
+                                    Blog
+                                </NavigationMenu.Link>
+                            </li>
+                            <Separator.Root
+                                orientation="horizontal"
+                                class={cn(
+                                    "bg-gray-300",
+                                    "shrink-0",
+                                    "data-[orientation=horizontal]:h-px",
+                                    "data-[orientation=vertical]:h-full",
+                                    "data-[orientation=horizontal]:w-full",
+                                )}
+                            />
+                            <li>
+                                <NavigationMenu.Link>
+                                    Favourites
+                                </NavigationMenu.Link>
+                            </li>
+                            <Separator.Root
+                                orientation="horizontal"
+                                class={cn(
+                                    "bg-gray-300",
+                                    "shrink-0",
+                                    "data-[orientation=horizontal]:h-px",
+                                    "data-[orientation=vertical]:h-full",
+                                    "data-[orientation=horizontal]:w-full",
+                                )}
+                            />
+                            <li>
+                                <NavigationMenu.Link>Orders</NavigationMenu.Link
+                                >
+                            </li>
+                        </ul>
+                    </NavigationMenu.Content>
+                </NavigationMenu.Item>
+                <!-- {@render NavItem("Home", "/")} -->
+                {@render NavItem("Shop", "/shop")}
+                {@render NavItem("About", "/about")}
+                {@render NavItem("Contact", "/contact")}
+            </NavigationMenu.List>
+        </NavigationMenu.Root>
+    </div>
     <div class={cn("flex", "items-center")}>
         {#if data.user}
             <NavigationMenu.Root
@@ -186,7 +219,7 @@
                                 "bg-transparent",
                                 "px-4",
                                 "py-2",
-                                "text-body-md",
+                                "text-base",
                                 "font-semibold",
                                 "font-primary",
                                 "transition-colors",
